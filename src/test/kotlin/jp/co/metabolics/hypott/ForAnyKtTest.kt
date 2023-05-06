@@ -2,6 +2,7 @@ package jp.co.metabolics.hypott
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import kotlin.random.Random
 
 class ForAnyKtTest {
   @Test
@@ -9,6 +10,7 @@ class ForAnyKtTest {
     data class TestInt(val i: Int)
 
     val instance = forAny(TestInt::class)
-    assertEquals(instance.i, 1)
+    println("instance: $instance")
+    assertEquals(Random(0L).nextInt(), instance.i)
   }
 }
