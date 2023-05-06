@@ -1,5 +1,5 @@
 plugins {
-  kotlin("jvm") version "1.8.20"
+  kotlin("jvm") version "1.8.21"
   application
 }
 
@@ -11,6 +11,7 @@ repositories {
 }
 
 dependencies {
+  implementation("org.jetbrains.kotlin:kotlin-reflect:1.8.21")
   testImplementation(kotlin("test"))
 }
 
