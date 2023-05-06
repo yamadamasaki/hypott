@@ -12,6 +12,7 @@ repositories {
 
 dependencies {
   implementation("org.jetbrains.kotlin:kotlin-reflect:1.8.21")
+  implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.+")
   testImplementation(kotlin("test"))
 }
 
