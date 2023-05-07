@@ -1,12 +1,13 @@
 package jp.co.metabolics.hypott
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.random.Random
 
 class ForAnyKtTest {
-  private val seed = (Math.random() * 10E19).toLong()
+  private val seed = (Math.random() * Long.MAX_VALUE).toLong()
   private lateinit var hypott: Hypott
   private lateinit var random: Random
 
@@ -19,6 +20,7 @@ class ForAnyKtTest {
   @Test
   // this may depend on test-target implementation
   fun testForAnyPrimitives() {
+
     data class PrimitivesFixture(
       val b: Byte, val s: Short, val i: Int, val l: Long,
       // val ub: UByte, val us: UShort, val ui: UInt, val ul: ULong,
@@ -43,6 +45,24 @@ class ForAnyKtTest {
     )
 
     val actual = hypott.forAny(PrimitivesFixture::class)
+
     assertEquals(expectation, actual)
+  }
+
+  @Test
+  fun testForAnyString() {
+
+    data class StringFixture(
+      val s: String,
+    )
+
+    val range = IntRange(1, 4)
+    val chars = ('0'..'9').joinToString("")
+    val variant = StringVariant(lengthRange = range, chars = chars)
+
+    val actual = hypott.forAny(StringFixture::class, variant = mapOf("s" to variant))
+
+    assertTrue(actual.s.length in range)
+    assertTrue(actual.s.all { it in chars })
   }
 }

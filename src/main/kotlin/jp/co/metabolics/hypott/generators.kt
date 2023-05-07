@@ -1,9 +1,10 @@
 package jp.co.metabolics.hypott
 
 import kotlin.random.Random
+import kotlin.random.nextInt
 import kotlin.reflect.KType
 
-fun generateValue(type: KType, random: Random): Any? {
+fun generateValue(type: KType, random: Random, variant: Variant): Any? {
   return when (type.toString()) {
     "kotlin.Byte" -> random.nextBytes(1)[0]
     "kotlin.Short" -> random.nextInt(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt()).toShort()
@@ -19,7 +20,7 @@ fun generateValue(type: KType, random: Random): Any? {
     "kotlin.Boolean" -> random.nextBoolean()
     // this cause java.lang.IllegalArgumentException when a char is invalid as Character (文字)
     // "kotlin.Char" -> random.nextInt(Char.MIN_VALUE.digitToInt(), Char.MAX_VALUE.digitToInt())
-    // "kotlin.String" -> // ToDo
+    "kotlin.String" -> stringGenerator(random, variant)
     // "kotlin.Array" -> // ToDo
     // "kotlin.ByteArray" -> // ToDo
     // "kotlin.ShortArray" -> // ToDo
@@ -31,4 +32,13 @@ fun generateValue(type: KType, random: Random): Any? {
     // "kotlin.ULongArray" -> // ToDo
     else -> null
   }
+}
+
+fun stringGenerator(random: Random, variant: Variant): String {
+  val variant = variant as StringVariant
+  val lengthRange = variant.lengthRange
+  assert(lengthRange.min() > 0)
+  val length = random.nextInt(lengthRange)
+  val baseChars = variant.chars
+  return (1..length).map { baseChars.random(random) }.joinToString("")
 }
