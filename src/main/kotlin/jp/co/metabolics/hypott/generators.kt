@@ -35,10 +35,11 @@ fun generateValue(type: KType, random: Random, variant: Variant): Any? {
 }
 
 fun stringGenerator(random: Random, variant: Variant): String {
-  val variant = variant as StringVariant
-  val lengthRange = variant.lengthRange
-  assert(lengthRange.min() > 0)
+  assert(variant is StringVariant)
+  val variant = variant as StringVariant // ToDo Exception
+  val (lengthRange, chars) = variant
+  assert(0 < lengthRange.min())
+  assert(chars.isNotEmpty())
   val length = random.nextInt(lengthRange)
-  val baseChars = variant.chars
-  return (1..length).map { baseChars.random(random) }.joinToString("")
+  return (1..length).map { chars.random(random) }.joinToString("")
 }
