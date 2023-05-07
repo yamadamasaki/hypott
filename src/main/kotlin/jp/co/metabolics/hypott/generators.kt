@@ -3,14 +3,11 @@ package jp.co.metabolics.hypott
 import kotlin.random.Random
 import kotlin.reflect.KType
 
-private const val seed = 0L
-private val random = Random(seed)
-
-fun generateValue(type: KType): Any? {
+fun generateValue(type: KType, random: Random): Any? {
   return when (type.toString()) {
-    "kotlin.Int"-> generateInt(0L)
+    "kotlin.Int" -> generateInt(random)
     else -> null
   }
 }
 
-fun generateInt(seed: Long): Int = random.nextInt()
+fun generateInt(random: Random): Int = random.nextInt()
