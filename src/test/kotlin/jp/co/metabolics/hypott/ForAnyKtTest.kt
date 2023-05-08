@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import kotlin.random.Random
 
@@ -78,5 +80,35 @@ class ForAnyKtTest {
     val actual = hypott.forAny(OffsetDateTimeFixture::class, variant = mapOf("odt" to variant))
 
     assertTrue(from.isBefore(actual.odt) && actual.odt.isBefore(until))
+  }
+
+  @Test
+  fun testForAnyLocalDateTime() {
+    data class LocalDateTimeFixture(
+      val ldt: LocalDateTime
+    )
+
+    val from = LocalDateTime.parse("1958-08-26T18:30:22")
+    val until = LocalDateTime.parse("2023-05-08T18:30:22")
+    val variant = LocalDateTimeVariant(from = from, until = until)
+
+    val actual = hypott.forAny(LocalDateTimeFixture::class, variant = mapOf("ldt" to variant))
+
+    assertTrue(from.isBefore(actual.ldt) && actual.ldt.isBefore(until))
+  }
+
+  @Test
+  fun testForAnyLocalDate() {
+    data class LocalDateFixture(
+      val ldt: LocalDate
+    )
+
+    val from = LocalDate.parse("1958-08-26")
+    val until = LocalDate.parse("2023-05-08")
+    val variant = LocalDateVariant(from = from, until = until)
+
+    val actual = hypott.forAny(LocalDateFixture::class, variant = mapOf("ldt" to variant))
+
+    assertTrue(from.isBefore(actual.ldt) && actual.ldt.isBefore(until))
   }
 }

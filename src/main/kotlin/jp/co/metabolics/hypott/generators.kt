@@ -1,7 +1,10 @@
 package jp.co.metabolics.hypott
 
 import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import kotlin.random.Random
 import kotlin.random.nextInt
 import kotlin.reflect.KType
@@ -33,6 +36,8 @@ fun generateValue(type: KType, random: Random, variant: Variant): Any? {
     // "kotlin.UIntArray" -> // ToDo
     // "kotlin.ULongArray" -> // ToDo
     "java.time.OffsetDateTime" -> offsetDateTimeGenerator(random, variant)
+    "java.time.LocalDateTime" -> localDateTimeGenerator(random, variant)
+    "java.time.LocalDate" -> localDateGenerator(random, variant)
     else -> null
   }
 }
@@ -54,4 +59,17 @@ fun offsetDateTimeGenerator(random: Random, variant: Variant): OffsetDateTime {
     Instant.ofEpochSecond(random.nextLong(from.toEpochSecond(), until.toEpochSecond())),
     zoneId // zoneId also should be randomized?
   )
+}
+
+fun localDateTimeGenerator(random: Random, variant: Variant): LocalDateTime {
+  val variant = variant as LocalDateTimeVariant // ToDo Exception
+  val (from, until, offset) = variant
+  return LocalDateTime.ofEpochSecond(
+    random.nextLong(from.toEpochSecond(offset), until.toEpochSecond(offset)), 0, offset
+  )
+}
+fun localDateGenerator(random: Random, variant: Variant): LocalDate {
+  val variant = variant as LocalDateVariant // ToDo Exception
+  val (from, until) = variant
+  return LocalDate.ofEpochDay(random.nextLong(from.toEpochDay(), until.toEpochDay()))
 }

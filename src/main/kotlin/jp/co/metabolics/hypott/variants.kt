@@ -1,7 +1,11 @@
 package jp.co.metabolics.hypott
 
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.Month
 import java.time.OffsetDateTime
 import java.time.ZoneId
+import java.time.ZoneOffset
 
 open class Variant
 
@@ -30,7 +34,21 @@ data class OffsetDateTimeVariant(
   val from: OffsetDateTime = OffsetDateTime.MIN,
   val until: OffsetDateTime = OffsetDateTime.MAX,
   val zoneId: ZoneId = ZoneId.systemDefault(),
-): Variant()
+) : Variant()
+
+data class LocalDateTimeVariant(
+  val from: LocalDateTime = LocalDateTime.MIN,
+  val until: LocalDateTime = LocalDateTime.MAX,
+  val offset: ZoneOffset = ZoneOffset.UTC,
+) : Variant()
+
+data class LocalDateVariant(
+  val from: LocalDate = LocalDate.MIN,
+  val until: LocalDate = LocalDate.MAX,
+) : Variant()
+
+const val ONE_CENTURY_IN_DAYS = 100_000L
+const val ONE_CENTURY_IN_SECONDS = 10_000_000_000L
 
 data class NumberVariant(
   val valueRange: IntRange? = null,
