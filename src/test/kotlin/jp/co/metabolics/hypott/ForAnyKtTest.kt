@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.time.OffsetDateTime
 import kotlin.random.Random
 
 class ForAnyKtTest {
@@ -20,7 +21,6 @@ class ForAnyKtTest {
   @Test
   // this may depend on test-target implementation
   fun testForAnyPrimitives() {
-
     data class PrimitivesFixture(
       val b: Byte, val s: Short, val i: Int, val l: Long,
       // val ub: UByte, val us: UShort, val ui: UInt, val ul: ULong,
@@ -51,7 +51,6 @@ class ForAnyKtTest {
 
   @Test
   fun testForAnyString() {
-
     data class StringFixture(
       val s: String,
     )
@@ -64,5 +63,20 @@ class ForAnyKtTest {
 
     assertTrue(actual.s.length in range)
     assertTrue(actual.s.all { it in chars })
+  }
+
+  @Test
+  fun testForAnyOffsetDateTime() {
+    data class OffsetDateTimeFixture(
+      val odt: OffsetDateTime
+    )
+
+    val from = OffsetDateTime.parse("1958-08-26T18:30:22+09:00")
+    val until = OffsetDateTime.parse("2023-05-08T18:30:22+09:00")
+    val variant = OffsetDateTimeVariant(from = from, until = until)
+
+    val actual = hypott.forAny(OffsetDateTimeFixture::class, variant = mapOf("odt" to variant))
+
+    assertTrue(from.isBefore(actual.odt) && actual.odt.isBefore(until))
   }
 }

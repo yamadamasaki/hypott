@@ -1,5 +1,8 @@
 package jp.co.metabolics.hypott
 
+import java.time.OffsetDateTime
+import java.time.ZoneId
+
 open class Variant
 
 data class StringVariant(
@@ -22,6 +25,12 @@ val alphaNumericChars = alphabeticalChars + numericChars
 val kanaChars = ('あ'..'ン').joinToString("")
 val kanjiChars = ('一'..'柋').joinToString("")
 val kanaKanjiChars = kanaChars + kanjiChars
+
+data class OffsetDateTimeVariant(
+  val from: OffsetDateTime = OffsetDateTime.MIN,
+  val until: OffsetDateTime = OffsetDateTime.MAX,
+  val zoneId: ZoneId = ZoneId.systemDefault(),
+): Variant()
 
 data class NumberVariant(
   val valueRange: IntRange? = null,

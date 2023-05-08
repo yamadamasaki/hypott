@@ -1,5 +1,7 @@
 package jp.co.metabolics.hypott
 
+import java.time.Instant
+import java.time.OffsetDateTime
 import kotlin.random.Random
 import kotlin.random.nextInt
 import kotlin.reflect.KType
@@ -30,6 +32,7 @@ fun generateValue(type: KType, random: Random, variant: Variant): Any? {
     // "kotlin.UShortArray" -> // ToDo
     // "kotlin.UIntArray" -> // ToDo
     // "kotlin.ULongArray" -> // ToDo
+    "java.time.OffsetDateTime" -> offsetDateTimeGenerator(random, variant)
     else -> null
   }
 }
@@ -42,4 +45,13 @@ fun stringGenerator(random: Random, variant: Variant): String {
   assert(chars.isNotEmpty())
   val length = random.nextInt(lengthRange)
   return (1..length).map { chars.random(random) }.joinToString("")
+}
+
+fun offsetDateTimeGenerator(random: Random, variant: Variant): OffsetDateTime {
+  val variant = variant as OffsetDateTimeVariant // ToDo Exception
+  val (from, until, zoneId) = variant
+  return OffsetDateTime.ofInstant(
+    Instant.ofEpochSecond(random.nextLong(from.toEpochSecond(), until.toEpochSecond())),
+    zoneId // zoneId also should be randomized?
+  )
 }
