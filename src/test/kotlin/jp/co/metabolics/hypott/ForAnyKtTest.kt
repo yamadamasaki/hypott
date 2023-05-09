@@ -123,4 +123,15 @@ class ForAnyKtTest {
 
     assertTrue(from.isBefore(actual.ldt) && actual.ldt.isBefore(until))
   }
+
+  enum class TestEnum { FOO, BAR, BAZ } // enum should be on top level
+
+  @Test
+  fun testForAnyEnum() {
+    data class EnumFixture(
+      val e: TestEnum
+    )
+
+    hypott.forAny(EnumFixture::class)
+  }
 }

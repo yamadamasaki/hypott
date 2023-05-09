@@ -6,9 +6,10 @@ import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import kotlin.random.Random
 import kotlin.random.nextInt
+import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
-fun generateValue(type: KType, random: Random, variant: Variant): Any? {
+fun generateValue(type: KType, random: Random, variant: Variant?): Any? {
   return when (type.toString()) {
     "kotlin.Byte" -> random.nextBytes(1)[0]
     "kotlin.Short" -> random.nextInt(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt()).toShort()
@@ -34,10 +35,10 @@ fun generateValue(type: KType, random: Random, variant: Variant): Any? {
     // "kotlin.UShortArray" -> // ToDo
     // "kotlin.UIntArray" -> // ToDo
     // "kotlin.ULongArray" -> // ToDo
-    else -> null
     "java.time.OffsetDateTime" -> offsetDateTimeGenerator(random, variant ?: OffsetDateTimeVariant())
     "java.time.LocalDateTime" -> localDateTimeGenerator(random, variant ?: LocalDateTimeVariant())
     "java.time.LocalDate" -> localDateGenerator(random, variant ?: LocalDateVariant())
+    else -> generateClassValue(type, random)
   }
 }
 
@@ -67,8 +68,27 @@ fun localDateTimeGenerator(random: Random, variant: Variant): LocalDateTime {
     random.nextLong(from.toEpochSecond(offset), until.toEpochSecond(offset)), 0, offset
   )
 }
+
 fun localDateGenerator(random: Random, variant: Variant): LocalDate {
   val variant = variant as LocalDateVariant // ToDo Exception
   val (from, until) = variant
   return LocalDate.ofEpochDay(random.nextLong(from.toEpochDay(), until.toEpochDay()))
+}
+
+fun generateClassValue(type: KType, random: Random): Any? { // ToDo Null return
+  val classifier = type.classifier ?: return null
+  val klass = classifier as KClass<*>
+  return when {
+    klass.java.isEnum -> generalEnumGenerator(klass, random)
+    else -> generalClassGenerator(klass, random)
+  }
+}
+
+fun generalClassGenerator(klass: KClass<*>, random: Random): Class<*>? {
+  return null
+}
+
+fun generalEnumGenerator(klass: KClass<*>, random: Random): Enum<*> {
+  val constants = klass.java.enumConstants
+  return constants.random(random) as Enum<*> // ToDo Exception
 }
