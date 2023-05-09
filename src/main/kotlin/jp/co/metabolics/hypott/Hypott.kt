@@ -16,7 +16,7 @@ class Hypott(
   ): T {
     val memberProperties = klass.memberProperties
     val map = memberProperties.map {
-      Pair(it.name, generateValue(it.returnType, random, variant[it.name] ?: Variant()))
+      Pair(it.name, generateValue(it.returnType, random, variant[it.name]))
     }.associate { it }
     val mapper = jacksonObjectMapper()
     mapper.registerModule(JavaTimeModule())

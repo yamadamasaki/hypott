@@ -52,7 +52,19 @@ class ForAnyKtTest {
   }
 
   @Test
-  fun testForAnyString() {
+  fun testForAnyStringWithDefaultVariant() {
+    data class StringFixture(
+      val s: String,
+    )
+
+    val actual = hypott.forAny(StringFixture::class)
+
+    assertTrue(actual.s.length in LengthRange.SS.range)
+    assertTrue(actual.s.all { it in alphaNumericChars })
+  }
+
+  @Test
+  fun testForAnyStringWithCustomVariant() {
     data class StringFixture(
       val s: String,
     )

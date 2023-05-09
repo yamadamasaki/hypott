@@ -4,7 +4,6 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
-import java.time.ZoneOffset
 import kotlin.random.Random
 import kotlin.random.nextInt
 import kotlin.reflect.KType
@@ -25,7 +24,7 @@ fun generateValue(type: KType, random: Random, variant: Variant): Any? {
     "kotlin.Boolean" -> random.nextBoolean()
     // this cause java.lang.IllegalArgumentException when a char is invalid as Character (文字)
     // "kotlin.Char" -> random.nextInt(Char.MIN_VALUE.digitToInt(), Char.MAX_VALUE.digitToInt())
-    "kotlin.String" -> stringGenerator(random, variant)
+    "kotlin.String" -> stringGenerator(random, variant ?: StringVariant())
     // "kotlin.Array" -> // ToDo
     // "kotlin.ByteArray" -> // ToDo
     // "kotlin.ShortArray" -> // ToDo
@@ -35,10 +34,10 @@ fun generateValue(type: KType, random: Random, variant: Variant): Any? {
     // "kotlin.UShortArray" -> // ToDo
     // "kotlin.UIntArray" -> // ToDo
     // "kotlin.ULongArray" -> // ToDo
-    "java.time.OffsetDateTime" -> offsetDateTimeGenerator(random, variant)
-    "java.time.LocalDateTime" -> localDateTimeGenerator(random, variant)
-    "java.time.LocalDate" -> localDateGenerator(random, variant)
     else -> null
+    "java.time.OffsetDateTime" -> offsetDateTimeGenerator(random, variant ?: OffsetDateTimeVariant())
+    "java.time.LocalDateTime" -> localDateTimeGenerator(random, variant ?: LocalDateTimeVariant())
+    "java.time.LocalDate" -> localDateGenerator(random, variant ?: LocalDateVariant())
   }
 }
 

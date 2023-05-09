@@ -2,7 +2,6 @@ package jp.co.metabolics.hypott
 
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.Month
 import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
@@ -47,10 +46,7 @@ data class LocalDateVariant(
   val until: LocalDate = LocalDate.MAX,
 ) : Variant()
 
-const val ONE_CENTURY_IN_DAYS = 100_000L
-const val ONE_CENTURY_IN_SECONDS = 10_000_000_000L
-
 data class NumberVariant(
-  val valueRange: IntRange? = null,
+  val valueRange: IntRange = IntRange(Int.MIN_VALUE, Int.MAX_VALUE),
   val distribution: String? = null,
 ) : Variant()
