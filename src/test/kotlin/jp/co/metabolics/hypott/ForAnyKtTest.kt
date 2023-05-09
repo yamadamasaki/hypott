@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
@@ -27,11 +28,13 @@ class ForAnyKtTest {
       val b: Byte, val s: Short, val i: Int, val l: Long,
       // val ub: UByte, val us: UShort, val ui: UInt, val ul: ULong,
       val f: Float, val d: Double, val boolean: Boolean,
+      val bg: BigDecimal,
     )
 
     // Note: the order of evaluation (alphabetically sorted) is crucial
     val expectation = PrimitivesFixture(
       b = random.nextBytes(1)[0],
+      bg = random.nextDouble().toBigDecimal(),
       boolean = random.nextBoolean(),
       d = random.nextDouble(),
       f = random.nextFloat(),

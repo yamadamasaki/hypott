@@ -38,6 +38,7 @@ fun generateValue(type: KType, random: Random, variant: Variant?): Any? {
     "java.time.OffsetDateTime" -> offsetDateTimeGenerator(random, variant ?: OffsetDateTimeVariant())
     "java.time.LocalDateTime" -> localDateTimeGenerator(random, variant ?: LocalDateTimeVariant())
     "java.time.LocalDate" -> localDateGenerator(random, variant ?: LocalDateVariant())
+    "java.math.BigDecimal" -> random.nextDouble().toBigDecimal()
     else -> generateClassValue(type, random)
   }
 }
