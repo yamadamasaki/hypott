@@ -137,4 +137,14 @@ class ForAnyKtTest {
 
     hypott.forAny(EnumFixture::class)
   }
+
+  @Test
+  fun testForAnyClass() {
+    data class TestClass(val s: String)
+    data class ClassFixture(val c: TestClass)
+
+    val actual = hypott.forAny(ClassFixture::class)
+
+    println("actual: $actual")
+  }
 }

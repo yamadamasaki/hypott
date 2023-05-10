@@ -78,15 +78,16 @@ fun localDateGenerator(random: Random, variant: Variant): LocalDate {
 
 fun generateClassValue(type: KType, random: Random): Any? { // ToDo Null return
   val classifier = type.classifier ?: return null
-  val klass = classifier as KClass<*>
+  val klass = classifier as KClass<Any>
   return when {
     klass.java.isEnum -> generalEnumGenerator(klass, random)
     else -> generalClassGenerator(klass, random)
   }
 }
 
-fun generalClassGenerator(klass: KClass<*>, random: Random): Class<*>? {
-  return null
+inline fun <reified T : Any> generalClassGenerator(klass: KClass<T>, random: Random): T {
+  val hypott = Hypott(random = random)
+  return hypott.forAny(klass)
 }
 
 fun generalEnumGenerator(klass: KClass<*>, random: Random): Enum<*> {

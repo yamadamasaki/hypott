@@ -46,6 +46,10 @@ data class LocalDateVariant(
   val until: LocalDate = LocalDate.MAX,
 ) : Variant()
 
+data class ClassVariant(
+  val members: Map<String, Variant>
+) : Variant()
+
 data class NumberVariant(
   val valueRange: IntRange = IntRange(Int.MIN_VALUE, Int.MAX_VALUE),
   val distribution: String? = null,
