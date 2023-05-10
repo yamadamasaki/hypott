@@ -39,7 +39,7 @@ fun generateValue(type: KType, random: Random, variant: Variant?): Any? {
     "java.time.LocalDateTime" -> localDateTimeGenerator(random, variant ?: LocalDateTimeVariant())
     "java.time.LocalDate" -> localDateGenerator(random, variant ?: LocalDateVariant())
     "java.math.BigDecimal" -> random.nextDouble().toBigDecimal()
-    else -> generateClassValue(type, random)
+    else -> generateClassValue(type, random, variant)
   }
 }
 
@@ -76,18 +76,19 @@ fun localDateGenerator(random: Random, variant: Variant): LocalDate {
   return LocalDate.ofEpochDay(random.nextLong(from.toEpochDay(), until.toEpochDay()))
 }
 
-fun generateClassValue(type: KType, random: Random): Any? { // ToDo Null return
+fun generateClassValue(type: KType, random: Random, variant: Variant?): Any? { // ToDo Null return
   val classifier = type.classifier ?: return null
   val klass = classifier as KClass<Any>
   return when {
     klass.java.isEnum -> generalEnumGenerator(klass, random)
-    else -> generalClassGenerator(klass, random)
+    else -> generalClassGenerator(klass, random, variant ?: ClassVariant())
   }
 }
 
-inline fun <reified T : Any> generalClassGenerator(klass: KClass<T>, random: Random): T {
+inline fun <reified T : Any> generalClassGenerator(klass: KClass<T>, random: Random, variant: Variant): T {
+  val variant = variant as ClassVariant // ToDo Exception
   val hypott = Hypott(random = random)
-  return hypott.forAny(klass)
+  return hypott.forAny(klass, variant.members)
 }
 
 fun generalEnumGenerator(klass: KClass<*>, random: Random): Enum<*> {

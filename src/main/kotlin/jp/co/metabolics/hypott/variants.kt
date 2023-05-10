@@ -47,7 +47,7 @@ data class LocalDateVariant(
 ) : Variant()
 
 data class ClassVariant(
-  val members: Map<String, Variant>
+  val members: Map<String, Variant> = mapOf()
 ) : Variant()
 
 data class NumberVariant(

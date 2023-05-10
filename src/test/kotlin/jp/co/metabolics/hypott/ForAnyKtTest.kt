@@ -143,8 +143,13 @@ class ForAnyKtTest {
     data class TestClass(val s: String)
     data class ClassFixture(val c: TestClass)
 
-    val actual = hypott.forAny(ClassFixture::class)
+    val range = IntRange(1, 4)
+    val chars = "1234"
+    val variant = ClassVariant(mapOf("s" to StringVariant(lengthRange = range, chars = chars)))
 
-    println("actual: $actual")
+    val actual = hypott.forAny(ClassFixture::class, mapOf("c" to variant))
+
+    val s = actual.c.s
+    assertTrue(s.length in range && s.all { it in chars })
   }
 }
