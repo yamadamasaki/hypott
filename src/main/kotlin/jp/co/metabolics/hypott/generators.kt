@@ -8,6 +8,7 @@ import kotlin.random.Random
 import kotlin.random.nextInt
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
+import kotlin.reflect.full.createType
 
 fun generateValue(type: KType, random: Random, variant: Variant?): Any? {
   return when (type.toString()) {
@@ -81,6 +82,8 @@ fun generateClassValue(type: KType, random: Random, variant: Variant?): Any? { /
   val klass = classifier as KClass<Any>
   return when {
     klass.java.isEnum -> generalEnumGenerator(klass, random)
+    klass.qualifiedName?.matches(Regex("""kotlin\.collections\.List.*""")) ?: false ->
+      generalListGenerator(klass, type.toString(), random, variant ?: Variant())
     else -> generalClassGenerator(klass, random, variant ?: ClassVariant())
   }
 }
@@ -94,4 +97,11 @@ inline fun <reified T : Any> generalClassGenerator(klass: KClass<T>, random: Ran
 fun generalEnumGenerator(klass: KClass<*>, random: Random): Enum<*> {
   val constants = klass.java.enumConstants
   return constants.random(random) as Enum<*> // ToDo Exception
+}
+
+fun <T : Any> generalListGenerator(klass: KClass<T>, typeName: String, random: Random, variant: Variant): List<*> {
+  val variant = variant as ListVariant // ToDo Exception
+  val typeParameterName = Regex(".*<(.*)>").matchEntire(typeName)?.groupValues?.get(1) // ToDo Exception
+  val type = Class.forName(kotlin2javaClassNameMap[typeParameterName]).kotlin.createType() // ToDo Exception
+  return variant.lengthRange.map { generateValue(type, random, variant.elementsVariant) }
 }

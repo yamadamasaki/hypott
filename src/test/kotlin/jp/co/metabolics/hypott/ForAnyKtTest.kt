@@ -152,4 +152,20 @@ class ForAnyKtTest {
     val s = actual.c.s
     assertTrue(s.length in range && s.all { it in chars })
   }
+
+  @Test
+  fun testForAnyList_String() {
+    data class ListFixture(val l: List<String>)
+
+    val variant = ListVariant(elementsVariant = StringVariant(chars = numericChars))
+
+    val actual = hypott.forAny(ListFixture::class, mapOf("l" to variant))
+  }
+
+  @Test
+  fun testForAnyList_Int() {
+    data class ListFixture(val l: List<Int>)
+
+    val actual = hypott.forAny(ListFixture::class, mapOf("l" to ListVariant()))
+  }
 }

@@ -54,3 +54,8 @@ data class NumberVariant(
   val valueRange: IntRange = IntRange(Int.MIN_VALUE, Int.MAX_VALUE),
   val distribution: String? = null,
 ) : Variant()
+
+data class ListVariant(
+  val lengthRange: IntRange = LengthRange.SS.range,
+  val elementsVariant: Variant? = null,
+) : Variant()
