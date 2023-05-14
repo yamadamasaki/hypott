@@ -83,7 +83,7 @@ fun generateClassValue(type: KType, random: Random, variant: Variant?): Any? { /
   return when {
     klass.java.isEnum -> generalEnumGenerator(klass, random)
     klass.qualifiedName?.matches(Regex("""kotlin\.collections\.List.*""")) ?: false ->
-      generalListGenerator(klass, type.toString(), random, variant ?: Variant())
+      generalListGenerator(klass, type.toString(), random, variant ?: ListVariant())
     else -> generalClassGenerator(klass, random, variant ?: ClassVariant())
   }
 }

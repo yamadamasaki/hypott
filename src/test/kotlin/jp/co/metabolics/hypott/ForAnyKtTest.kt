@@ -94,7 +94,8 @@ class ForAnyKtTest {
 
     val actual = hypott.forAny(OffsetDateTimeFixture::class, variant = mapOf("odt" to variant))
 
-    assertTrue(from.isBefore(actual.odt) && actual.odt.isBefore(until))
+    assertTrue(from.isBefore(actual.odt))
+    assertTrue(actual.odt.isBefore(until))
   }
 
   @Test
@@ -109,7 +110,8 @@ class ForAnyKtTest {
 
     val actual = hypott.forAny(LocalDateTimeFixture::class, variant = mapOf("ldt" to variant))
 
-    assertTrue(from.isBefore(actual.ldt) && actual.ldt.isBefore(until))
+    assertTrue(from.isBefore(actual.ldt))
+    assertTrue(actual.ldt.isBefore(until))
   }
 
   @Test
@@ -124,7 +126,8 @@ class ForAnyKtTest {
 
     val actual = hypott.forAny(LocalDateFixture::class, variant = mapOf("ldt" to variant))
 
-    assertTrue(from.isBefore(actual.ldt) && actual.ldt.isBefore(until))
+    assertTrue(from.isBefore(actual.ldt))
+    assertTrue(actual.ldt.isBefore(until))
   }
 
   enum class TestEnum { FOO, BAR, BAZ } // enum should be on top level
@@ -150,22 +153,31 @@ class ForAnyKtTest {
     val actual = hypott.forAny(ClassFixture::class, mapOf("c" to variant))
 
     val s = actual.c.s
-    assertTrue(s.length in range && s.all { it in chars })
+    assertTrue(s.length in range)
+    assertTrue(s.all { it in chars })
   }
 
   @Test
   fun testForAnyList_String() {
     data class ListFixture(val l: List<String>)
 
-    val variant = ListVariant(elementsVariant = StringVariant(chars = numericChars))
+    val elementsVariant = StringVariant(chars = numericChars)
+    val variant = ListVariant(elementsVariant = elementsVariant)
 
     val actual = hypott.forAny(ListFixture::class, mapOf("l" to variant))
+
+    assertTrue(actual.l.size in variant.lengthRange)
+    assertTrue(actual.l.map { it.length in elementsVariant.lengthRange }.all { it })
+    assertTrue(actual.l.map { it.matches(Regex("[${numericChars}].*")) }.all { it })
   }
 
   @Test
   fun testForAnyList_Int() {
     data class ListFixture(val l: List<Int>)
 
-    val actual = hypott.forAny(ListFixture::class, mapOf("l" to ListVariant()))
+    val variant = ListVariant()
+    val actual = hypott.forAny(ListFixture::class, mapOf("l" to variant))
+
+    assertTrue(actual.l.size in variant.lengthRange)
   }
 }
