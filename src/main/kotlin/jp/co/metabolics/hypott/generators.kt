@@ -84,8 +84,13 @@ fun generateClassValue(type: KType, random: Random, variant: Variant?): Any? { /
     klass.java.isEnum -> generalEnumGenerator(klass, random)
     klass.qualifiedName?.matches(Regex("""kotlin\.collections\.List.*""")) ?: false ->
       generalListGenerator(klass, type.toString(), random, variant ?: ListVariant())
+
     klass.qualifiedName?.matches(Regex("""kotlin\.collections\.Set.*""")) ?: false ->
       generalSetGenerator(klass, type.toString(), random, variant ?: SetVariant())
+
+    klass.qualifiedName?.matches(Regex("""kotlin\.collections\.Map.*""")) ?: false ->
+      generalMapGenerator(klass, type.toString(), random, variant ?: MapVariant())
+
     else -> generalClassGenerator(klass, random, variant ?: ClassVariant())
   }
 }
@@ -109,10 +114,26 @@ fun <T : Any> generalListGenerator(klass: KClass<T>, typeName: String, random: R
   return (1..length).map { generateValue(type, random, variant.elementsVariant) }
 }
 
-fun <T: Any> generalSetGenerator(klass: KClass<T>, typeName: String, random: Random, variant: Variant): Set<*> {
+fun <T : Any> generalSetGenerator(klass: KClass<T>, typeName: String, random: Random, variant: Variant): Set<*> {
   val variant = variant as SetVariant // ToDo Exception
   val typeParameterName = Regex(".*<(.*)>").matchEntire(typeName)?.groupValues?.get(1) // ToDo Exception
   val type = Class.forName(kotlin2javaClassNameMap[typeParameterName]).kotlin.createType() // ToDo Exception
   val length = variant.lengthRange.random(random)
   return (1..length).map { generateValue(type, random, variant.elementsVariant) }.toSet()
+}
+
+fun <T : Any> generalMapGenerator(klass: KClass<T>, typeName: String, random: Random, variant: Variant): Map<*, *> {
+  val variant = variant as MapVariant // ToDo Exception
+  val typeParameterNames = Regex(""".*<(.*),\s*(.*)>""").matchEntire(typeName)?.groupValues
+    ?: listOf("<kotlin.String, kotlin.String>", "kotlin.String", "kotlin.String") // ToDo Error
+  val (_, keyTypeName, valueTypeName) = typeParameterNames // ToDo Exception
+  val keyType = Class.forName(kotlin2javaClassNameMap[keyTypeName]).kotlin.createType() // ToDo Exception
+  val valueType = Class.forName(kotlin2javaClassNameMap[valueTypeName]).kotlin.createType() // ToDo Exception
+  val length = variant.lengthRange.random(random)
+  return (1..length).map {
+    Pair(
+      generateValue(keyType, random, variant.keyVariant),
+      generateValue(valueType, random, variant.valueVariant),
+    )
+  }.associate { it }
 }

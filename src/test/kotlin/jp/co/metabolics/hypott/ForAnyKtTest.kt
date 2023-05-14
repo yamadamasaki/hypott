@@ -183,15 +183,28 @@ class ForAnyKtTest {
 
   @Test
   fun testForAnySet_String() {
-    data class SetFixture(val l: Set<String>)
+    data class SetFixture(val s: Set<String>)
 
     val elementsVariant = StringVariant(chars = numericChars)
     val variant = SetVariant(elementsVariant = elementsVariant)
 
-    val actual = hypott.forAny(SetFixture::class, mapOf("l" to variant))
+    val actual = hypott.forAny(SetFixture::class, mapOf("s" to variant))
 
-    assertTrue(actual.l.size <= variant.lengthRange.max()) // actual size of set may be reduced to make unique
-    assertTrue(actual.l.map { it.length in elementsVariant.lengthRange }.all { it })
-    assertTrue(actual.l.map { it.matches(Regex("[${numericChars}].*")) }.all { it })
+    assertTrue(actual.s.size <= variant.lengthRange.max()) // actual size of set may be reduced to make unique
+    assertTrue(actual.s.map { it.length in elementsVariant.lengthRange }.all { it })
+    assertTrue(actual.s.map { it.matches(Regex("[${numericChars}].*")) }.all { it })
+  }
+
+  @Test
+  fun testForAnyMap_String_Int() {
+    data class MapFixture(val m: Map<String, Int>)
+
+    val keyVariant = StringVariant()
+    val variant = MapVariant(keyVariant = keyVariant)
+
+    val actual = hypott.forAny(MapFixture::class, mapOf("m" to variant))
+
+    assertTrue(actual.m.size in variant.lengthRange)
+    assertTrue(actual.m.map { (k, _) -> k.length in keyVariant.lengthRange }.all { it })
   }
 }

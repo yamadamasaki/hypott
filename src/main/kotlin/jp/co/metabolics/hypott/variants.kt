@@ -64,3 +64,9 @@ data class SetVariant(
   val lengthRange: IntRange = LengthRange.SS.range,
   val elementsVariant: Variant? = null,
 ) : Variant()
+
+data class MapVariant(
+  val lengthRange: IntRange = LengthRange.SS.range,
+  val keyVariant: Variant? = null,
+  val valueVariant: Variant? = null,
+) : Variant()
