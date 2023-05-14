@@ -180,4 +180,18 @@ class ForAnyKtTest {
 
     assertTrue(actual.l.size in variant.lengthRange)
   }
+
+  @Test
+  fun testForAnySet_String() {
+    data class SetFixture(val l: Set<String>)
+
+    val elementsVariant = StringVariant(chars = numericChars)
+    val variant = SetVariant(elementsVariant = elementsVariant)
+
+    val actual = hypott.forAny(SetFixture::class, mapOf("l" to variant))
+
+    assertTrue(actual.l.size <= variant.lengthRange.max()) // actual size of set may be reduced to make unique
+    assertTrue(actual.l.map { it.length in elementsVariant.lengthRange }.all { it })
+    assertTrue(actual.l.map { it.matches(Regex("[${numericChars}].*")) }.all { it })
+  }
 }

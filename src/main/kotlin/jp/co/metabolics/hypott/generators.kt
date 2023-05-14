@@ -84,6 +84,8 @@ fun generateClassValue(type: KType, random: Random, variant: Variant?): Any? { /
     klass.java.isEnum -> generalEnumGenerator(klass, random)
     klass.qualifiedName?.matches(Regex("""kotlin\.collections\.List.*""")) ?: false ->
       generalListGenerator(klass, type.toString(), random, variant ?: ListVariant())
+    klass.qualifiedName?.matches(Regex("""kotlin\.collections\.Set.*""")) ?: false ->
+      generalSetGenerator(klass, type.toString(), random, variant ?: SetVariant())
     else -> generalClassGenerator(klass, random, variant ?: ClassVariant())
   }
 }
@@ -103,5 +105,14 @@ fun <T : Any> generalListGenerator(klass: KClass<T>, typeName: String, random: R
   val variant = variant as ListVariant // ToDo Exception
   val typeParameterName = Regex(".*<(.*)>").matchEntire(typeName)?.groupValues?.get(1) // ToDo Exception
   val type = Class.forName(kotlin2javaClassNameMap[typeParameterName]).kotlin.createType() // ToDo Exception
-  return variant.lengthRange.map { generateValue(type, random, variant.elementsVariant) }
+  val length = variant.lengthRange.random(random)
+  return (1..length).map { generateValue(type, random, variant.elementsVariant) }
+}
+
+fun <T: Any> generalSetGenerator(klass: KClass<T>, typeName: String, random: Random, variant: Variant): Set<*> {
+  val variant = variant as SetVariant // ToDo Exception
+  val typeParameterName = Regex(".*<(.*)>").matchEntire(typeName)?.groupValues?.get(1) // ToDo Exception
+  val type = Class.forName(kotlin2javaClassNameMap[typeParameterName]).kotlin.createType() // ToDo Exception
+  val length = variant.lengthRange.random(random)
+  return (1..length).map { generateValue(type, random, variant.elementsVariant) }.toSet()
 }

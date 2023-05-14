@@ -11,7 +11,7 @@ open class Variant
 data class StringVariant(
   val lengthRange: IntRange = LengthRange.SS.range,
   val chars: String = alphaNumericChars,
-  val regex: Regex? = null,
+  val regex: Regex? = null // ToDo Feature
 ) : Variant()
 
 enum class LengthRange(val range: IntRange) {
@@ -52,10 +52,15 @@ data class ClassVariant(
 
 data class NumberVariant(
   val valueRange: IntRange = IntRange(Int.MIN_VALUE, Int.MAX_VALUE),
-  val distribution: String? = null,
+  val distribution: String? = null, // ToDo Feature
 ) : Variant()
 
 data class ListVariant(
+  val lengthRange: IntRange = LengthRange.SS.range,
+  val elementsVariant: Variant? = null,
+) : Variant()
+
+data class SetVariant(
   val lengthRange: IntRange = LengthRange.SS.range,
   val elementsVariant: Variant? = null,
 ) : Variant()
