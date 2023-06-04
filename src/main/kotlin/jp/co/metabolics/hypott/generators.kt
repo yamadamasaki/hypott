@@ -13,17 +13,17 @@ import kotlin.reflect.full.createType
 fun generateValue(type: KType, random: Random, variant: Variant?, where: Any? = null): Any? {
   return when (type.toString()) {
     "kotlin.Byte" -> where ?: random.nextBytes(1)[0]
-    "kotlin.Short" -> random.nextInt(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt()).toShort()
-    "kotlin.Int" -> random.nextInt()
-    "kotlin.Long" -> random.nextLong()
+    "kotlin.Short" -> where ?: random.nextInt(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt()).toShort()
+    "kotlin.Int" -> where ?: random.nextInt()
+    "kotlin.Long" -> where ?: random.nextLong()
     /* unsigned numbers are not yet allowed in Jackson */
     // "kotlin.UByte" -> random.nextUBytes(1)[0]
     // "kotlin.UShort" -> random.nextUInt(UShort.MIN_VALUE.toUInt(), UShort.MAX_VALUE.toUInt()).toUShort()
     // "kotlin.UInt" -> random.nextUInt()
     // "kotlin.ULong" -> random.nextULong()
-    "kotlin.Float" -> random.nextFloat()
-    "kotlin.Double" -> random.nextDouble()
-    "kotlin.Boolean" -> random.nextBoolean()
+    "kotlin.Float" -> where ?: random.nextFloat()
+    "kotlin.Double" -> where ?: random.nextDouble()
+    "kotlin.Boolean" -> where ?: random.nextBoolean()
     // this cause java.lang.IllegalArgumentException when a char is invalid as Character (文字)
     // "kotlin.Char" -> random.nextInt(Char.MIN_VALUE.digitToInt(), Char.MAX_VALUE.digitToInt())
     "kotlin.String" -> stringGenerator(random, variant ?: StringVariant())
@@ -39,7 +39,7 @@ fun generateValue(type: KType, random: Random, variant: Variant?, where: Any? = 
     "java.time.OffsetDateTime" -> offsetDateTimeGenerator(random, variant ?: OffsetDateTimeVariant())
     "java.time.LocalDateTime" -> localDateTimeGenerator(random, variant ?: LocalDateTimeVariant())
     "java.time.LocalDate" -> localDateGenerator(random, variant ?: LocalDateVariant())
-    "java.math.BigDecimal" -> random.nextDouble().toBigDecimal()
+    "java.math.BigDecimal" -> where ?: random.nextDouble().toBigDecimal()
     else -> generateClassValue(type, random, variant)
   }
 }

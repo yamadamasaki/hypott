@@ -29,18 +29,25 @@ class WhereKtTest {
 
     val where = object {
       val b: Byte = 26
+      val bg: BigDecimal = BigDecimal(1208)
+      val boolean: Boolean = false
+      val d: Double = 2342.343
+      val f: Float = (-209847.34534958).toFloat()
+      val i: Int = 98171
+      val l: Long = 98171L
+      val s: Short = -298
     }
 
     // Note: the order of evaluation (alphabetically sorted) is crucial
     val expectation = PrimitivesFixture(
       b = 26,
-      bg = random.nextDouble().toBigDecimal(),
-      boolean = random.nextBoolean(),
-      d = random.nextDouble(),
-      f = random.nextFloat(),
-      i = random.nextInt(),
-      l = random.nextLong(),
-      s = random.nextInt(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt()).toShort(),
+      bg = BigDecimal(1208),
+      boolean = false,
+      d = 2342.343,
+      f = (-209847.34534958).toFloat(),
+      i = 98171,
+      l = 98171L,
+      s = -298,
       /*
       ub = random.nextUBytes(1)[0],
       ui = random.nextUInt(),
