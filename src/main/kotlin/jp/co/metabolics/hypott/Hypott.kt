@@ -12,11 +12,14 @@ class Hypott(
 ) {
   inline fun <reified T : Any> forAny(
     klass: KClass<T>,
-    variant: Map<String, Variant> = emptyMap()
+    variant: Map<String, Variant> = emptyMap(),
+    where: Any? = null,
   ): T {
     val memberProperties = klass.memberProperties
+    val whereProperties = if (where == null) null else where::class.members
     val map = memberProperties.map {
-      Pair(it.name, generateValue(it.returnType, random, variant[it.name]))
+      val typeName = it.name
+      Pair(typeName, generateValue(it.returnType, random, variant[typeName], whereProperties?.find { prop -> prop.name == typeName }?.call(where)))
     }.associate { it }
     val mapper = jacksonObjectMapper()
     mapper.registerModule(JavaTimeModule())
