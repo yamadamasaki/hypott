@@ -26,7 +26,7 @@ fun generateValue(type: KType, random: Random, variant: Variant?, where: Any? = 
     "kotlin.Boolean" -> where ?: random.nextBoolean()
     // this cause java.lang.IllegalArgumentException when a char is invalid as Character (文字)
     // "kotlin.Char" -> random.nextInt(Char.MIN_VALUE.digitToInt(), Char.MAX_VALUE.digitToInt())
-    "kotlin.String" -> stringGenerator(random, variant ?: StringVariant())
+    "kotlin.String" -> where ?: stringGenerator(random, variant ?: StringVariant())
     // "kotlin.Array" -> // ToDo
     // "kotlin.ByteArray" -> // ToDo
     // "kotlin.ShortArray" -> // ToDo
@@ -36,9 +36,9 @@ fun generateValue(type: KType, random: Random, variant: Variant?, where: Any? = 
     // "kotlin.UShortArray" -> // ToDo
     // "kotlin.UIntArray" -> // ToDo
     // "kotlin.ULongArray" -> // ToDo
-    "java.time.OffsetDateTime" -> offsetDateTimeGenerator(random, variant ?: OffsetDateTimeVariant())
-    "java.time.LocalDateTime" -> localDateTimeGenerator(random, variant ?: LocalDateTimeVariant())
-    "java.time.LocalDate" -> localDateGenerator(random, variant ?: LocalDateVariant())
+    "java.time.OffsetDateTime" -> where ?: offsetDateTimeGenerator(random, variant ?: OffsetDateTimeVariant())
+    "java.time.LocalDateTime" -> where ?: localDateTimeGenerator(random, variant ?: LocalDateTimeVariant())
+    "java.time.LocalDate" -> where ?: localDateGenerator(random, variant ?: LocalDateVariant())
     "java.math.BigDecimal" -> where ?: random.nextDouble().toBigDecimal()
     else -> generateClassValue(type, random, variant)
   }

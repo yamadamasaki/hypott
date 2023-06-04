@@ -94,6 +94,7 @@ class ForAnyKtTest {
 
     val actual = hypott.forAny(OffsetDateTimeFixture::class, variant = mapOf("odt" to variant))
 
+    // actual にはなぜか Z 時間が入っていることに注意. 以下は成立するが
     assertTrue(from.isBefore(actual.odt))
     assertTrue(actual.odt.isBefore(until))
   }
@@ -117,7 +118,7 @@ class ForAnyKtTest {
   @Test
   fun testForAnyLocalDate() {
     data class LocalDateFixture(
-      val ldt: LocalDate
+      val ld: LocalDate
     )
 
     val from = LocalDate.parse("1958-08-26")
@@ -126,8 +127,8 @@ class ForAnyKtTest {
 
     val actual = hypott.forAny(LocalDateFixture::class, variant = mapOf("ldt" to variant))
 
-    assertTrue(from.isBefore(actual.ldt))
-    assertTrue(actual.ldt.isBefore(until))
+    assertTrue(from.isBefore(actual.ld))
+    assertTrue(actual.ld.isBefore(until))
   }
 
   enum class TestEnum { FOO, BAR, BAZ } // enum should be on top level
