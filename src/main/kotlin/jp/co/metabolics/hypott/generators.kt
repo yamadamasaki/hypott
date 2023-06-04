@@ -12,7 +12,7 @@ import kotlin.reflect.full.createType
 
 fun generateValue(type: KType, random: Random, variant: Variant?, where: Any? = null): Any? {
   return when (type.toString()) {
-    "kotlin.Byte" -> random.nextBytes(1)[0]
+    "kotlin.Byte" -> where ?: random.nextBytes(1)[0]
     "kotlin.Short" -> random.nextInt(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt()).toShort()
     "kotlin.Int" -> random.nextInt()
     "kotlin.Long" -> random.nextLong()
