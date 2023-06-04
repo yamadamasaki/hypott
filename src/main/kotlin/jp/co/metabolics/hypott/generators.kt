@@ -106,23 +106,23 @@ fun generalEnumGenerator(klass: KClass<*>, random: Random): Enum<*> {
   return constants.random(random) as Enum<*> // ToDo Exception
 }
 
-fun <T : Any> generalListGenerator(klass: KClass<T>, typeName: String, random: Random, variant: Variant): List<*> {
+fun <T : Any> generalListGenerator(klass: KClass<T>, typeName: String, random: Random, variant: Variant): T {
   val variant = variant as ListVariant // ToDo Exception
   val typeParameterName = Regex(".*<(.*)>").matchEntire(typeName)?.groupValues?.get(1) // ToDo Exception
   val type = Class.forName(kotlin2javaClassNameMap[typeParameterName]).kotlin.createType() // ToDo Exception
   val length = variant.lengthRange.random(random)
-  return (1..length).map { generateValue(type, random, variant.elementsVariant) }
+  return (1..length).map { generateValue(type, random, variant.elementsVariant) } as T // ToDo Exception
 }
 
-fun <T : Any> generalSetGenerator(klass: KClass<T>, typeName: String, random: Random, variant: Variant): Set<*> {
+fun <T : Any> generalSetGenerator(klass: KClass<T>, typeName: String, random: Random, variant: Variant): T {
   val variant = variant as SetVariant // ToDo Exception
   val typeParameterName = Regex(".*<(.*)>").matchEntire(typeName)?.groupValues?.get(1) // ToDo Exception
   val type = Class.forName(kotlin2javaClassNameMap[typeParameterName]).kotlin.createType() // ToDo Exception
   val length = variant.lengthRange.random(random)
-  return (1..length).map { generateValue(type, random, variant.elementsVariant) }.toSet()
+  return (1..length).map { generateValue(type, random, variant.elementsVariant) }.toSet() as T // ToDo Exception
 }
 
-fun <T : Any> generalMapGenerator(klass: KClass<T>, typeName: String, random: Random, variant: Variant): Map<*, *> {
+fun <T : Any> generalMapGenerator(klass: KClass<T>, typeName: String, random: Random, variant: Variant): T {
   val variant = variant as MapVariant // ToDo Exception
   val typeParameterNames = Regex(""".*<(.*),\s*(.*)>""").matchEntire(typeName)?.groupValues
     ?: listOf("<kotlin.String, kotlin.String>", "kotlin.String", "kotlin.String") // ToDo Error
@@ -135,5 +135,5 @@ fun <T : Any> generalMapGenerator(klass: KClass<T>, typeName: String, random: Ra
       generateValue(keyType, random, variant.keyVariant),
       generateValue(valueType, random, variant.valueVariant),
     )
-  }.associate { it }
+  }.associate { it } as T // ToDo Exception
 }
