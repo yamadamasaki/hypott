@@ -91,8 +91,7 @@ class WhereKtTest {
 
     val actual = hypott.forAny(OffsetDateTimeFixture::class, where = where)
 
-    // なぜか actual には Z 時間が入っていて, equals は true にならない. where では代入しているだけのはずだが
-    Assertions.assertEquals(actual.odt.toInstant(), where.odt.toInstant())
+    Assertions.assertEquals(actual.odt, where.odt)
   }
 
   @Test
