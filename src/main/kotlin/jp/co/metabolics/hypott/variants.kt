@@ -128,18 +128,25 @@ data class ClassVariant(
   val members: Map<String, Variant> = mapOf()
 ) : Variant()
 
+data class EnumVariant(
+  val nullRatio: Float = .5F,
+) : Variant()
+
 data class ListVariant(
   val lengthRange: IntRange = LengthRange.SS.range,
   val elementsVariant: Variant? = null,
+  val nullRatio: Float = .5F,
 ) : Variant()
 
 data class SetVariant(
   val lengthRange: IntRange = LengthRange.SS.range,
   val elementsVariant: Variant? = null,
+  val nullRatio: Float = .5F,
 ) : Variant()
 
 data class MapVariant(
   val lengthRange: IntRange = LengthRange.SS.range,
   val keyVariant: Variant? = null,
   val valueVariant: Variant? = null,
+  val nullRatio: Float = .5F,
 ) : Variant()

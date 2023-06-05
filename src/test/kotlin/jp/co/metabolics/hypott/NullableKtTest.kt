@@ -175,4 +175,71 @@ class NullableKtTest {
     println("nNull: $nNull")
     Assertions.assertNotEquals(nNull, 0) // not rigid but almost correct
   }
+
+  enum class TestEnum { FOO, BAR, BAZ } // enum should be on top level
+
+  @Test
+  fun testNullabilityEnum() {
+    data class EnumFixture(val e: TestEnum?)
+
+    val variant = EnumVariant(nullRatio = 0.9F)
+
+    val nNull = (0..99)
+      .map { hypott.forAny(EnumFixture::class, variant = mapOf("e" to variant)) }
+      .filter { it.e == null }.size
+    println("nNull: $nNull")
+    Assertions.assertNotEquals(nNull, 0) // not rigid but almost correct
+  }
+
+  @Test
+  fun testNullabilityList_String() {
+    data class ListFixture(val l: List<String>?)
+
+    val variant = ListVariant(nullRatio = .9F)
+
+    val nNull = (0..99)
+      .map { hypott.forAny(ListFixture::class, mapOf("l" to variant)) }
+      .filter { it.l == null }.size
+    println("nNull: $nNull")
+    Assertions.assertNotEquals(nNull, 0) // not rigid but almost correct
+  }
+
+  @Test
+  fun testNullabilityList_Int() {
+    data class ListFixture(val l: List<Int>?)
+
+    val variant = ListVariant(nullRatio = .9F)
+
+    val nNull = (0..99)
+      .map { hypott.forAny(ListFixture::class, mapOf("l" to variant)) }
+      .filter { it.l == null }.size
+    println("nNull: $nNull")
+    Assertions.assertNotEquals(nNull, 0) // not rigid but almost correct
+  }
+
+  @Test
+  fun testNullabilitySet_String() {
+    data class SetFixture(val s: Set<String>?)
+
+    val variant = SetVariant(nullRatio = .9F)
+
+    val nNull = (0..99)
+      .map { hypott.forAny(SetFixture::class, mapOf("s" to variant)) }
+      .filter { it.s == null }.size
+    println("nNull: $nNull")
+    Assertions.assertNotEquals(nNull, 0) // not rigid but almost correct
+  }
+
+  @Test
+  fun testNullabilityMap_String_Int() {
+    data class MapFixture(val m: Map<String, Int>?)
+
+    val variant = MapVariant(nullRatio = .9F)
+
+    val nNull = (0..99)
+      .map { hypott.forAny(MapFixture::class, mapOf("m" to variant)) }
+      .filter { it.m == null }.size
+    println("nNull: $nNull")
+    Assertions.assertNotEquals(nNull, 0) // not rigid but almost correct
+  }
 }

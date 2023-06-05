@@ -47,11 +47,10 @@ fun generateValue(type: KType, random: Random, variant: Variant?, where: Any? = 
     "java.time.LocalDate", "java.time.LocalDate?" ->
       where ?: localDateGenerator(random, variant ?: LocalDateVariant(), nullable)
 
-    "java.math.BigDecimal", "java.math.BigDecimal?" -> where ?: bigDecimalGenerator(
-      random, variant ?: BigDecimalVariant(), nullable
-    )
+    "java.math.BigDecimal", "java.math.BigDecimal?" ->
+      where ?: bigDecimalGenerator(random, variant ?: BigDecimalVariant(), nullable)
 
-    else -> generateClassValue(type, random, variant, where)
+    else -> generateClassValue(type, random, variant, where, nullable)
   }
 }
 
@@ -140,54 +139,73 @@ fun localDateGenerator(random: Random, variant: Variant, nullable: Boolean): Loc
   return LocalDate.ofEpochDay(random.nextLong(from.toEpochDay(), until.toEpochDay()))
 }
 
-fun generateClassValue(type: KType, random: Random, variant: Variant?, where: Any?): Any? { // ToDo Null return
+fun generateClassValue(
+  type: KType,
+  random: Random,
+  variant: Variant?,
+  where: Any?,
+  nullable: Boolean
+): Any? { // ToDo Null return
   val classifier = type.classifier ?: return null
   val klass = classifier as KClass<Any>
   return when {
-    klass.java.isEnum -> where ?: generalEnumGenerator(klass, random)
+    klass.java.isEnum -> where ?: generalEnumGenerator(klass, random, variant ?: EnumVariant(), nullable)
     klass.qualifiedName?.matches(Regex("""kotlin\.collections\.List.*""")) ?: false ->
-      where ?: generalListGenerator(klass, type.toString(), random, variant ?: ListVariant())
+      where ?: generalListGenerator(klass, type.toString(), random, variant ?: ListVariant(), nullable)
 
     klass.qualifiedName?.matches(Regex("""kotlin\.collections\.Set.*""")) ?: false ->
-      where ?: generalSetGenerator(klass, type.toString(), random, variant ?: SetVariant())
+      where ?: generalSetGenerator(klass, type.toString(), random, variant ?: SetVariant(), nullable)
 
     klass.qualifiedName?.matches(Regex("""kotlin\.collections\.Map.*""")) ?: false ->
-      where ?: generalMapGenerator(klass, type.toString(), random, variant ?: MapVariant())
+      where ?: generalMapGenerator(klass, type.toString(), random, variant ?: MapVariant(), nullable)
 
-    else -> generalClassGenerator(klass, random, variant ?: ClassVariant(), where)
+    else -> generalClassGenerator(klass, random, variant ?: ClassVariant(), where, nullable)
   }
 }
 
-inline fun <reified T : Any> generalClassGenerator(klass: KClass<T>, random: Random, variant: Variant, where: Any?): T {
+inline fun <reified T : Any> generalClassGenerator(
+  klass: KClass<T>, random: Random, variant: Variant, where: Any?, nullable: Boolean
+): T {
   val variant = variant as ClassVariant // ToDo Exception
   val hypott = Hypott(random = random)
   return hypott.forAny(klass, variant.members, where)
 }
 
-fun generalEnumGenerator(klass: KClass<*>, random: Random): Enum<*> {
+fun generalEnumGenerator(klass: KClass<*>, random: Random, variant: Variant, nullable: Boolean): Enum<*>? {
+  val variant = variant as EnumVariant // ToDo Exception
+  if (nullable && random.nextFloat() < variant.nullRatio) return null
   val constants = klass.java.enumConstants
   return constants.random(random) as Enum<*> // ToDo Exception
 }
 
-fun <T : Any> generalListGenerator(klass: KClass<T>, typeName: String, random: Random, variant: Variant): T {
+fun <T : Any> generalListGenerator(
+  klass: KClass<T>, typeName: String, random: Random, variant: Variant, nullable: Boolean
+): T? {
   val variant = variant as ListVariant // ToDo Exception
-  val typeParameterName = Regex(".*<(.*)>").matchEntire(typeName)?.groupValues?.get(1) // ToDo Exception
+  if (nullable && random.nextFloat() < variant.nullRatio) return null
+  val typeParameterName = Regex(".*<(.*)>\\??").matchEntire(typeName)?.groupValues?.get(1) // ToDo Exception
   val type = Class.forName(kotlin2javaClassNameMap[typeParameterName]).kotlin.createType() // ToDo Exception
   val length = variant.lengthRange.random(random)
   return (1..length).map { generateValue(type, random, variant.elementsVariant) } as T // ToDo Exception
 }
 
-fun <T : Any> generalSetGenerator(klass: KClass<T>, typeName: String, random: Random, variant: Variant): T {
+fun <T : Any> generalSetGenerator(
+  klass: KClass<T>, typeName: String, random: Random, variant: Variant, nullable: Boolean
+): T? {
   val variant = variant as SetVariant // ToDo Exception
-  val typeParameterName = Regex(".*<(.*)>").matchEntire(typeName)?.groupValues?.get(1) // ToDo Exception
+  if (nullable && random.nextFloat() < variant.nullRatio) return null
+  val typeParameterName = Regex(".*<(.*)>\\??").matchEntire(typeName)?.groupValues?.get(1) // ToDo Exception
   val type = Class.forName(kotlin2javaClassNameMap[typeParameterName]).kotlin.createType() // ToDo Exception
   val length = variant.lengthRange.random(random)
   return (1..length).map { generateValue(type, random, variant.elementsVariant) }.toSet() as T // ToDo Exception
 }
 
-fun <T : Any> generalMapGenerator(klass: KClass<T>, typeName: String, random: Random, variant: Variant): T {
+fun <T : Any> generalMapGenerator(
+  klass: KClass<T>, typeName: String, random: Random, variant: Variant, nullable: Boolean
+): T? {
   val variant = variant as MapVariant // ToDo Exception
-  val typeParameterNames = Regex(""".*<(.*),\s*(.*)>""").matchEntire(typeName)?.groupValues
+  if (nullable && random.nextFloat() < variant.nullRatio) return null
+  val typeParameterNames = Regex(""".*<(.*),\s*(.*)>\??""").matchEntire(typeName)?.groupValues
     ?: listOf("<kotlin.String, kotlin.String>", "kotlin.String", "kotlin.String") // ToDo Error
   val (_, keyTypeName, valueTypeName) = typeParameterNames // ToDo Exception
   val keyType = Class.forName(kotlin2javaClassNameMap[keyTypeName]).kotlin.createType() // ToDo Exception
