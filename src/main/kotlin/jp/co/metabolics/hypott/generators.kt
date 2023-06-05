@@ -40,7 +40,7 @@ fun generateValue(type: KType, random: Random, variant: Variant?, where: Any? = 
     "java.time.LocalDateTime" -> where ?: localDateTimeGenerator(random, variant ?: LocalDateTimeVariant())
     "java.time.LocalDate" -> where ?: localDateGenerator(random, variant ?: LocalDateVariant())
     "java.math.BigDecimal" -> where ?: random.nextDouble().toBigDecimal()
-    else -> generateClassValue(type, random, variant)
+    else -> generateClassValue(type, random, variant, where)
   }
 }
 
@@ -77,19 +77,19 @@ fun localDateGenerator(random: Random, variant: Variant): LocalDate {
   return LocalDate.ofEpochDay(random.nextLong(from.toEpochDay(), until.toEpochDay()))
 }
 
-fun generateClassValue(type: KType, random: Random, variant: Variant?): Any? { // ToDo Null return
+fun generateClassValue(type: KType, random: Random, variant: Variant?, where: Any?): Any? { // ToDo Null return
   val classifier = type.classifier ?: return null
   val klass = classifier as KClass<Any>
   return when {
-    klass.java.isEnum -> generalEnumGenerator(klass, random)
+    klass.java.isEnum -> where ?: generalEnumGenerator(klass, random)
     klass.qualifiedName?.matches(Regex("""kotlin\.collections\.List.*""")) ?: false ->
-      generalListGenerator(klass, type.toString(), random, variant ?: ListVariant())
+      where ?: generalListGenerator(klass, type.toString(), random, variant ?: ListVariant())
 
     klass.qualifiedName?.matches(Regex("""kotlin\.collections\.Set.*""")) ?: false ->
-      generalSetGenerator(klass, type.toString(), random, variant ?: SetVariant())
+      where ?: generalSetGenerator(klass, type.toString(), random, variant ?: SetVariant())
 
     klass.qualifiedName?.matches(Regex("""kotlin\.collections\.Map.*""")) ?: false ->
-      generalMapGenerator(klass, type.toString(), random, variant ?: MapVariant())
+      where ?: generalMapGenerator(klass, type.toString(), random, variant ?: MapVariant())
 
     else -> generalClassGenerator(klass, random, variant ?: ClassVariant())
   }

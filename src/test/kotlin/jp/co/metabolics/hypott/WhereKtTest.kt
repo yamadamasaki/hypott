@@ -124,4 +124,73 @@ class WhereKtTest {
 
     Assertions.assertEquals(actual.ld, where.ld)
   }
+
+  enum class TestEnum { FOO, BAR, BAZ } // enum should be on top level
+
+  @Test
+  fun testWhereEnum() {
+    data class EnumFixture(
+      val e: TestEnum
+    )
+
+    val where = object {
+      val e: TestEnum = TestEnum.FOO
+    }
+
+    val actual = hypott.forAny(EnumFixture::class, where = where)
+
+    Assertions.assertEquals(actual.e, where.e)
+  }
+
+  @Test
+  fun testWhereList_String() {
+    data class ListFixture(val l: List<String>)
+
+    val where = object {
+      val l: List<String> = listOf("123", "345", "456")
+    }
+
+    val actual = hypott.forAny(ListFixture::class, where = where)
+
+    Assertions.assertEquals(actual.l, where.l)
+  }
+
+  @Test
+  fun testWhereList_Int() {
+    data class ListFixture(val l: List<Int>)
+
+    val where = object {
+      val l: List<Int> = listOf(123, 234, 345)
+    }
+
+    val actual = hypott.forAny(ListFixture::class, where = where)
+
+    Assertions.assertEquals(actual.l, where.l)
+  }
+
+  @Test
+  fun testWhereSet_String() {
+    data class SetFixture(val s: Set<String>)
+
+    val where = object {
+      val s: Set<String> = setOf("123", "234", "345")
+    }
+
+    val actual = hypott.forAny(SetFixture::class, where = where)
+
+    Assertions.assertEquals(actual.s, where.s)
+  }
+
+  @Test
+  fun testWhereMap_String_Int() {
+    data class MapFixture(val m: Map<String, Int>)
+
+    val where = object {
+      val m: Map<String, Int> = mapOf("123" to 123, "234" to 234, "345" to 345)
+    }
+
+    val actual = hypott.forAny(MapFixture::class, where = where)
+
+    Assertions.assertEquals(actual.m, where.m)
+  }
 }
