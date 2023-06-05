@@ -1,5 +1,6 @@
 package jp.co.metabolics.hypott
 
+import java.math.BigDecimal
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -11,19 +12,20 @@ import kotlin.reflect.KType
 import kotlin.reflect.full.createType
 
 fun generateValue(type: KType, random: Random, variant: Variant?, where: Any? = null): Any? {
+  val nullable = type.isMarkedNullable
   return when (type.toString()) {
-    "kotlin.Byte" -> where ?: random.nextBytes(1)[0]
-    "kotlin.Short" -> where ?: random.nextInt(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt()).toShort()
-    "kotlin.Int" -> where ?: random.nextInt()
-    "kotlin.Long" -> where ?: random.nextLong()
+    "kotlin.Byte", "kotlin.Byte?" -> where ?: byteGenerator(random, variant ?: ByteVariant(), nullable)
+    "kotlin.Short", "kotlin.Short?" -> where ?: shortGenerator(random, variant ?: ShortVariant(), nullable)
+    "kotlin.Int", "kotlin.Int?" -> where ?: intGenerator(random, variant ?: IntVariant(), nullable)
+    "kotlin.Long", "kotlin.Long?" -> where ?: longGenerator(random, variant ?: LongVariant(), nullable)
     /* unsigned numbers are not yet allowed in Jackson */
     // "kotlin.UByte" -> random.nextUBytes(1)[0]
     // "kotlin.UShort" -> random.nextUInt(UShort.MIN_VALUE.toUInt(), UShort.MAX_VALUE.toUInt()).toUShort()
     // "kotlin.UInt" -> random.nextUInt()
     // "kotlin.ULong" -> random.nextULong()
-    "kotlin.Float" -> where ?: random.nextFloat()
-    "kotlin.Double" -> where ?: random.nextDouble()
-    "kotlin.Boolean" -> where ?: random.nextBoolean()
+    "kotlin.Float", "kotlin.Float?" -> where ?: floatGenerator(random, variant ?: FloatVariant(), nullable)
+    "kotlin.Double", "kotlin.Double?" -> where ?: doubleGenerator(random, variant ?: DoubleVariant(), nullable)
+    "kotlin.Boolean", "kotlin.Boolean?" -> where ?: booleanGenerator(random, variant ?: BooleanVariant(), nullable)
     // this cause java.lang.IllegalArgumentException when a char is invalid as Character (文字)
     // "kotlin.Char" -> random.nextInt(Char.MIN_VALUE.digitToInt(), Char.MAX_VALUE.digitToInt())
     "kotlin.String" -> where ?: stringGenerator(random, variant ?: StringVariant())
@@ -39,9 +41,60 @@ fun generateValue(type: KType, random: Random, variant: Variant?, where: Any? = 
     "java.time.OffsetDateTime" -> where ?: offsetDateTimeGenerator(random, variant ?: OffsetDateTimeVariant())
     "java.time.LocalDateTime" -> where ?: localDateTimeGenerator(random, variant ?: LocalDateTimeVariant())
     "java.time.LocalDate" -> where ?: localDateGenerator(random, variant ?: LocalDateVariant())
-    "java.math.BigDecimal" -> where ?: random.nextDouble().toBigDecimal()
+    "java.math.BigDecimal", "java.math.BigDecimal?" -> where ?: bigDecimalGenerator(
+      random, variant ?: BigDecimalVariant(), nullable
+    )
+
     else -> generateClassValue(type, random, variant, where)
   }
+}
+
+fun byteGenerator(random: Random, variant: Variant, nullable: Boolean): Byte? {
+  val variant = variant as ByteVariant // ToDo Exception
+  return if (nullable && random.nextFloat() < variant.nullRatio) null
+  else random.nextBytes(1)[0]
+}
+
+fun shortGenerator(random: Random, variant: Variant, nullable: Boolean): Short? {
+  val variant = variant as ShortVariant // ToDo Exception
+  return if (nullable && random.nextFloat() < variant.nullRatio) null
+  else random.nextInt(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt()).toShort()
+}
+
+fun intGenerator(random: Random, variant: Variant, nullable: Boolean): Int? {
+  val variant = variant as IntVariant // ToDo Exception
+  return if (nullable && random.nextFloat() < variant.nullRatio) null
+  else random.nextInt()
+}
+
+fun longGenerator(random: Random, variant: Variant, nullable: Boolean): Long? {
+  val variant = variant as LongVariant // ToDo Exception
+  return if (nullable && random.nextFloat() < variant.nullRatio) null
+  else random.nextLong()
+}
+
+fun floatGenerator(random: Random, variant: Variant, nullable: Boolean): Float? {
+  val variant = variant as FloatVariant // ToDo Exception
+  return if (nullable && random.nextFloat() < variant.nullRatio) null
+  else random.nextFloat()
+}
+
+fun doubleGenerator(random: Random, variant: Variant, nullable: Boolean): Double? {
+  val variant = variant as DoubleVariant // ToDo Exception
+  return if (nullable && random.nextFloat() < variant.nullRatio) null
+  else random.nextDouble()
+}
+
+fun booleanGenerator(random: Random, variant: Variant, nullable: Boolean): Boolean? {
+  val variant = variant as BooleanVariant // ToDo Exception
+  return if (nullable && random.nextFloat() < variant.nullRatio) null
+  else random.nextBoolean()
+}
+
+fun bigDecimalGenerator(random: Random, variant: Variant, nullable: Boolean): BigDecimal? {
+  val variant = variant as BigDecimalVariant // ToDo Exception
+  return if (nullable && random.nextFloat() < variant.nullRatio) null
+  else random.nextDouble().toBigDecimal()
 }
 
 fun stringGenerator(random: Random, variant: Variant): String {

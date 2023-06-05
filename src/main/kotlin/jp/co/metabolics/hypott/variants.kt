@@ -8,6 +8,80 @@ import java.time.ZoneOffset
 
 open class Variant
 
+enum class Distribution {
+  Uniform,
+}
+
+enum class NegPos {
+  Negative,
+  Positive,
+  NotNegative,
+  NotPositive,
+  Zero,
+  All,
+}
+
+data class ByteRange(val min: Byte, val max: Byte)
+
+data class ByteVariant(
+  // val range: ByteRange = ByteRange(Byte.MIN_VALUE, Byte.MAX_VALUE), // ToDo Feature
+  // val distribution: Distribution = Distribution.Uniform, // ToDo Feature
+  // val negpos: NegPos = NegPos.All, // ToDo Feature
+  val nullRatio: Float = .5F
+) : Variant()
+
+data class ShortRange(val min: Short, val max: Short)
+
+data class ShortVariant(
+  // val range: ShortRange = ShortRange(Short.MIN_VALUE, Short.MAX_VALUE), // ToDo Feature
+  // val distribution: Distribution = Distribution.Uniform, // ToDo Feature
+  // val negpos: NegPos = NegPos.All, // ToDo Feature
+  val nullRatio: Float = .5F
+) : Variant()
+
+data class IntVariant(
+  // val range: IntRange = IntRange(Int.MIN_VALUE, Int.MAX_VALUE), // ToDo Feature
+  // val distribution: Distribution = Distribution.Uniform, // ToDo Feature
+  // val negpos: NegPos = NegPos.All, // ToDo Feature
+  val nullRatio: Float = .5F
+) : Variant()
+
+data class LongVariant(
+  // val range: LongRange = LongRange(Long.MIN_VALUE, Long.MAX_VALUE), // ToDo Feature
+  // val distribution: Distribution = Distribution.Uniform, // ToDo Feature
+  // val negpos: NegPos = NegPos.All, // ToDo Feature
+  val nullRatio: Float = .5F
+) : Variant()
+
+data class FloatRange(val min: Float, val max: Float)
+
+data class FloatVariant(
+  // val range: FloatRange = FloatRange(Float.MIN_VALUE, Float.MAX_VALUE), // ToDo Feature
+  // val distribution: Distribution = Distribution.Uniform, // ToDo Feature
+  // val negpos: NegPos = NegPos.All, // ToDo Feature
+  val nullRatio: Float = .5F
+) : Variant()
+
+data class DoubleRange(val min: Double, val max: Double)
+
+data class DoubleVariant(
+  val range: DoubleRange = DoubleRange(Double.MIN_VALUE, Double.MAX_VALUE), // ToDo Feature
+  // val distribution: Distribution = Distribution.Uniform, // ToDo Feature
+  // val negpos: NegPos = NegPos.All, // ToDo Feature
+  val nullRatio: Float = .5F
+) : Variant()
+
+data class BigDecimalVariant(
+  // val range: LongRange = LongRange(Long.MIN_VALUE, Long.MAX_VALUE), // ToDo Feature
+  // val distribution: Distribution = Distribution.Uniform, // ToDo Feature
+  // val negpos: NegPos = NegPos.All, // ToDo Feature
+  val nullRatio: Float = .5F
+) : Variant()
+
+data class BooleanVariant(
+  val nullRatio: Float = .5F
+) : Variant()
+
 data class StringVariant(
   val lengthRange: IntRange = LengthRange.SS.range,
   val chars: String = alphaNumericChars,
