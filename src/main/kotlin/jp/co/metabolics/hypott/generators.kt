@@ -91,14 +91,14 @@ fun generateClassValue(type: KType, random: Random, variant: Variant?, where: An
     klass.qualifiedName?.matches(Regex("""kotlin\.collections\.Map.*""")) ?: false ->
       where ?: generalMapGenerator(klass, type.toString(), random, variant ?: MapVariant())
 
-    else -> generalClassGenerator(klass, random, variant ?: ClassVariant())
+    else -> generalClassGenerator(klass, random, variant ?: ClassVariant(), where)
   }
 }
 
-inline fun <reified T : Any> generalClassGenerator(klass: KClass<T>, random: Random, variant: Variant): T {
+inline fun <reified T : Any> generalClassGenerator(klass: KClass<T>, random: Random, variant: Variant, where: Any?): T {
   val variant = variant as ClassVariant // ToDo Exception
   val hypott = Hypott(random = random)
-  return hypott.forAny(klass, variant.members)
+  return hypott.forAny(klass, variant.members, where)
 }
 
 fun generalEnumGenerator(klass: KClass<*>, random: Random): Enum<*> {

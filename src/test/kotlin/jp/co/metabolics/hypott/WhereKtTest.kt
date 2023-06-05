@@ -142,6 +142,22 @@ class WhereKtTest {
   }
 
   @Test
+  fun testWhereClass() {
+    data class TestClass(val s: String)
+    data class ClassFixture(val c: TestClass)
+
+    val where = object {
+      val c = object {
+        val s: String = "string"
+      }
+    }
+
+    val actual = hypott.forAny(ClassFixture::class, where = where)
+
+    Assertions.assertEquals(actual.c.s, where.c.s)
+  }
+
+  @Test
   fun testWhereList_String() {
     data class ListFixture(val l: List<String>)
 
