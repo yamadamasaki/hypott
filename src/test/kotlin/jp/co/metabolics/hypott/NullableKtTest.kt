@@ -4,6 +4,9 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import kotlin.random.Random
 
 class NullableKtTest {
@@ -117,6 +120,58 @@ class NullableKtTest {
     val nNull = (0..99)
       .map { hypott.forAny(BigDecimalFixture::class, variant = mapOf("b" to variant)) }
       .filter { it.b == null }.size
+    println("nNull: $nNull")
+    Assertions.assertNotEquals(nNull, 0) // not rigid but almost correct
+  }
+
+  @Test
+  fun testNullabilityString() {
+    data class StringFixture(val s: String?)
+
+    val variant = StringVariant(nullRatio = 0.9F)
+
+    val nNull = (0..99)
+      .map { hypott.forAny(StringFixture::class, variant = mapOf("s" to variant)) }
+      .filter { it.s == null }.size
+    println("nNull: $nNull")
+    Assertions.assertNotEquals(nNull, 0) // not rigid but almost correct
+  }
+
+  @Test
+  fun testNullabilityOffsetDateTime() {
+    data class OffsetDateTimeFixture(val odt: OffsetDateTime?)
+
+    val variant = OffsetDateTimeVariant(nullRatio = 0.9F)
+
+    val nNull = (0..99)
+      .map { hypott.forAny(OffsetDateTimeFixture::class, variant = mapOf("odt" to variant)) }
+      .filter { it.odt == null }.size
+    println("nNull: $nNull")
+    Assertions.assertNotEquals(nNull, 0) // not rigid but almost correct
+  }
+
+  @Test
+  fun testNullabilityLocalDateTime() {
+    data class LocalDateTimeFixture(val ldt: LocalDateTime?)
+
+    val variant = LocalDateTimeVariant(nullRatio = 0.9F)
+
+    val nNull = (0..99)
+      .map { hypott.forAny(LocalDateTimeFixture::class, variant = mapOf("ldt" to variant)) }
+      .filter { it.ldt == null }.size
+    println("nNull: $nNull")
+    Assertions.assertNotEquals(nNull, 0) // not rigid but almost correct
+  }
+
+  @Test
+  fun testNullabilityLocalDate() {
+    data class LocalDateFixture(val ld: LocalDate?)
+
+    val variant = LocalDateVariant(nullRatio = 0.9F)
+
+    val nNull = (0..99)
+      .map { hypott.forAny(LocalDateFixture::class, variant = mapOf("ld" to variant)) }
+      .filter { it.ld == null }.size
     println("nNull: $nNull")
     Assertions.assertNotEquals(nNull, 0) // not rigid but almost correct
   }

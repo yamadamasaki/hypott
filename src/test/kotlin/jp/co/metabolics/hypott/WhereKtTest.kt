@@ -9,7 +9,6 @@ import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import kotlin.random.Random
 
-
 class WhereKtTest {
   private val seed = (Math.random() * Long.MAX_VALUE).toLong()
   private lateinit var hypott: Hypott

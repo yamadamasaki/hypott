@@ -85,7 +85,8 @@ data class BooleanVariant(
 data class StringVariant(
   val lengthRange: IntRange = LengthRange.SS.range,
   val chars: String = alphaNumericChars,
-  val regex: Regex? = null // ToDo Feature
+  val regex: Regex? = null, // ToDo Feature
+  val nullRatio: Float = .5F
 ) : Variant()
 
 enum class LengthRange(val range: IntRange) {
@@ -107,26 +108,24 @@ data class OffsetDateTimeVariant(
   val from: OffsetDateTime = OffsetDateTime.MIN,
   val until: OffsetDateTime = OffsetDateTime.MAX,
   val zoneId: ZoneId = ZoneId.systemDefault(),
+  val nullRatio: Float = .5F,
 ) : Variant()
 
 data class LocalDateTimeVariant(
   val from: LocalDateTime = LocalDateTime.MIN,
   val until: LocalDateTime = LocalDateTime.MAX,
   val offset: ZoneOffset = ZoneOffset.UTC,
+  val nullRatio: Float = .5F,
 ) : Variant()
 
 data class LocalDateVariant(
   val from: LocalDate = LocalDate.MIN,
   val until: LocalDate = LocalDate.MAX,
+  val nullRatio: Float = .5F,
 ) : Variant()
 
 data class ClassVariant(
   val members: Map<String, Variant> = mapOf()
-) : Variant()
-
-data class NumberVariant(
-  val valueRange: IntRange = IntRange(Int.MIN_VALUE, Int.MAX_VALUE),
-  val distribution: String? = null, // ToDo Feature
 ) : Variant()
 
 data class ListVariant(

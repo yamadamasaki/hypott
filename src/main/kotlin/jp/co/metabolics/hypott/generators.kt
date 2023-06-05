@@ -28,7 +28,7 @@ fun generateValue(type: KType, random: Random, variant: Variant?, where: Any? = 
     "kotlin.Boolean", "kotlin.Boolean?" -> where ?: booleanGenerator(random, variant ?: BooleanVariant(), nullable)
     // this cause java.lang.IllegalArgumentException when a char is invalid as Character (文字)
     // "kotlin.Char" -> random.nextInt(Char.MIN_VALUE.digitToInt(), Char.MAX_VALUE.digitToInt())
-    "kotlin.String" -> where ?: stringGenerator(random, variant ?: StringVariant())
+    "kotlin.String", "kotlin.String?" -> where ?: stringGenerator(random, variant ?: StringVariant(), nullable)
     // "kotlin.Array" -> // ToDo
     // "kotlin.ByteArray" -> // ToDo
     // "kotlin.ShortArray" -> // ToDo
@@ -38,9 +38,15 @@ fun generateValue(type: KType, random: Random, variant: Variant?, where: Any? = 
     // "kotlin.UShortArray" -> // ToDo
     // "kotlin.UIntArray" -> // ToDo
     // "kotlin.ULongArray" -> // ToDo
-    "java.time.OffsetDateTime" -> where ?: offsetDateTimeGenerator(random, variant ?: OffsetDateTimeVariant())
-    "java.time.LocalDateTime" -> where ?: localDateTimeGenerator(random, variant ?: LocalDateTimeVariant())
-    "java.time.LocalDate" -> where ?: localDateGenerator(random, variant ?: LocalDateVariant())
+    "java.time.OffsetDateTime", "java.time.OffsetDateTime?" ->
+      where ?: offsetDateTimeGenerator(random, variant ?: OffsetDateTimeVariant(), nullable)
+
+    "java.time.LocalDateTime", "java.time.LocalDateTime?" ->
+      where ?: localDateTimeGenerator(random, variant ?: LocalDateTimeVariant(), nullable)
+
+    "java.time.LocalDate", "java.time.LocalDate?" ->
+      where ?: localDateGenerator(random, variant ?: LocalDateVariant(), nullable)
+
     "java.math.BigDecimal", "java.math.BigDecimal?" -> where ?: bigDecimalGenerator(
       random, variant ?: BigDecimalVariant(), nullable
     )
@@ -97,9 +103,10 @@ fun bigDecimalGenerator(random: Random, variant: Variant, nullable: Boolean): Bi
   else random.nextDouble().toBigDecimal()
 }
 
-fun stringGenerator(random: Random, variant: Variant): String {
+fun stringGenerator(random: Random, variant: Variant, nullable: Boolean): String? {
   assert(variant is StringVariant)
   val variant = variant as StringVariant // ToDo Exception
+  if (nullable && random.nextFloat() < variant.nullRatio) return null
   val (lengthRange, chars) = variant
   assert(0 < lengthRange.min())
   assert(chars.isNotEmpty())
@@ -107,8 +114,9 @@ fun stringGenerator(random: Random, variant: Variant): String {
   return (1..length).map { chars.random(random) }.joinToString("")
 }
 
-fun offsetDateTimeGenerator(random: Random, variant: Variant): OffsetDateTime {
+fun offsetDateTimeGenerator(random: Random, variant: Variant, nullable: Boolean): OffsetDateTime? {
   val variant = variant as OffsetDateTimeVariant // ToDo Exception
+  if (nullable && random.nextFloat() < variant.nullRatio) return null
   val (from, until, zoneId) = variant
   return OffsetDateTime.ofInstant(
     Instant.ofEpochSecond(random.nextLong(from.toEpochSecond(), until.toEpochSecond())),
@@ -116,16 +124,18 @@ fun offsetDateTimeGenerator(random: Random, variant: Variant): OffsetDateTime {
   )
 }
 
-fun localDateTimeGenerator(random: Random, variant: Variant): LocalDateTime {
+fun localDateTimeGenerator(random: Random, variant: Variant, nullable: Boolean): LocalDateTime? {
   val variant = variant as LocalDateTimeVariant // ToDo Exception
+  if (nullable && random.nextFloat() < variant.nullRatio) return null
   val (from, until, offset) = variant
   return LocalDateTime.ofEpochSecond(
     random.nextLong(from.toEpochSecond(offset), until.toEpochSecond(offset)), 0, offset
   )
 }
 
-fun localDateGenerator(random: Random, variant: Variant): LocalDate {
+fun localDateGenerator(random: Random, variant: Variant, nullable: Boolean): LocalDate? {
   val variant = variant as LocalDateVariant // ToDo Exception
+  if (nullable && random.nextFloat() < variant.nullRatio) return null
   val (from, until) = variant
   return LocalDate.ofEpochDay(random.nextLong(from.toEpochDay(), until.toEpochDay()))
 }
