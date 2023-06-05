@@ -43,25 +43,19 @@ class WhereKtTest {
 
     // Note: the order of evaluation (alphabetically sorted) is crucial
     val expectation = PrimitivesFixture(
-      b = 26,
-      bg = BigDecimal(1208),
-      boolean = false,
-      d = 2342.343,
-      f = (-209847.34534958).toFloat(),
-      i = 98171,
-      l = 98171L,
-      s = -298,
-      /*
-      ub = random.nextUBytes(1)[0],
-      ui = random.nextUInt(),
-      ul = random.nextULong(),
-      us = random.nextUInt(UShort.MIN_VALUE.toUInt(), UShort.MAX_VALUE.toUInt()).toUShort(),
-       */
+      b = where.b,
+      bg = where.bg,
+      boolean = where.boolean,
+      d = where.d,
+      f = where.f,
+      i = where.i,
+      l = where.l,
+      s = where.s,
     )
 
     val actual = hypott.forAny(PrimitivesFixture::class, where = where)
 
-    Assertions.assertEquals(expectation, actual)
+    Assertions.assertEquals(actual, expectation)
   }
 
   @Test
