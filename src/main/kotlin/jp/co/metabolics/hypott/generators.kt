@@ -165,8 +165,9 @@ fun generateClassValue(
 
 inline fun <reified T : Any> generalClassGenerator(
   klass: KClass<T>, random: Random, variant: Variant, where: Any?, nullable: Boolean
-): T {
+): T? {
   val variant = variant as ClassVariant // ToDo Exception
+  if (nullable && random.nextFloat() < variant.nullRatio) return null
   val hypott = Hypott(random = random)
   return hypott.forAny(klass, variant.members, where)
 }

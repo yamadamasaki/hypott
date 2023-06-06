@@ -192,6 +192,20 @@ class NullableKtTest {
   }
 
   @Test
+  fun testNullabilityClass() {
+    data class TestClass(val s: String)
+    data class ClassFixture(val c: TestClass?)
+
+    val variant = ClassVariant(nullRatio = 0.9F)
+
+    val nNull = (0..99)
+      .map { hypott.forAny(ClassFixture::class, mapOf("c" to variant)) }
+      .filter { it.c == null }.size
+    println("nNull: $nNull")
+    Assertions.assertNotEquals(nNull, 0) // not rigid but almost correct
+  }
+
+  @Test
   fun testNullabilityList_String() {
     data class ListFixture(val l: List<String>?)
 

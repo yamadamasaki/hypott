@@ -125,7 +125,8 @@ data class LocalDateVariant(
 ) : Variant()
 
 data class ClassVariant(
-  val members: Map<String, Variant> = mapOf()
+  val members: Map<String, Variant> = mapOf(),
+  val nullRatio: Float = .5F,
 ) : Variant()
 
 data class EnumVariant(
