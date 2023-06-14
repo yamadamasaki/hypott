@@ -1,92 +1,88 @@
 # Hypott - a Hypothesis Testing Library for Kotlin (jvm)
 
-Hypott は, 小さなソフトウェア試験ライブラリです. 
+Hypott is a small software testing library.
 
-Hypott は, Kotlin で書かれ, Kotlin (jvm) プロジェクトでの利用を想定していますが, どんなテスティング・フレームワークとも一緒に使うことができます (何ならテスティング・フレームワークなしでも, テストとは関係なく使うこともできるでしょう).
+Hypott is written in Kotlin and is intended for use in Kotlin (jvm) projects, but can be used with any testing framework (or, if you prefer, without a testing framework and independent of testing).
 
-Hypott ができることは, 次の二つだけです.
+Hypott can only do two things
 
--   「仮説」と呼ばれる試験の前提条件を記述すること
--   「仮説」を計算機の上で実行すること
+- Describe the assumptions of the test, called "hypotheses"
+- __Run__ the "hypothesis" on a computer
 
-## 仮説とは
+## What is a hypothesis?
 
-Hypott で用いる「仮説 (Hypothesis)」という用語は以下のようなことを意味しています.
+The term "Hypothesis" used in Hypott means the following.
 
-数学の述語論理を思い出してみましょう. それらは一般的にだいたい次のような形をしています.
+Recall predicate logic in mathematics. They generally have the following form.
 
--   何らかの性質を満たす任意の x0, x1, ... に対して --- (1)
--   ある特定の y0, y1, ... が存在して --- ()
--   (それらを変数としてもつ) ある論理式が成り立つ --- ()
+- For any x0, x1, ..., satisfying some property --- (1)
+- Some y0, y1, ... exists --- (2)
+- Some logical equation (with them as variables) holds --- (3)
 
-ソフトウェア試験の目的は, このような論理式 (仮説) が本当に成り立つ (あるいは成り立たない) ことを証明することです.
+The purpose of software testing is to prove that such a predicates (hypothesis) really holds (or does not hold).
 
-従って, 試験コードには必ず (1)-(3) が記述されているはずなのですが, 実際にはこの三つが渾然一体となって明確な区別なく記述されていることも多く, その場合にはその試験の仕様そのものが試験コードを読んでもよく分からない, ということになりがちです.
+Therefore, the test code should always contain (1)-(3), but in reality, these three items are often described as a whole without clear distinction, and in such cases, the specification of the test itself is often not clear even by reading the test code.
 
-ソフトウェア・コードでこのような論理式を表す方法として, いわゆるフォーマル・メソッドをサポートしたり, 強力な型システムを持つプログラミング言語もあります (Lean, VDM, Coq, ...). 最近はそれらも広く使われるようになってきているので, それらを使うのも一つの方法です.
+Some programming languages support so-called formal methods or have powerful type systems (Lean, VDM, Coq, ...) as a way to represent such logical expressions in software code. These are also widely used nowadays, so using them is one way to express logic expressions.
 
-ここでは Kotlin のような古くからあるプログラミング言語でも,
+Hypott's goal is to make it possible to express hypotheses as clearly as possible and as proof-like as possible (in fact, the proof itself is impossible, since there is no basis for proof).
 
--   できる限り仮説を明確に表現でき
--   できる限り証明っぽいことができる (実際には証明のための基盤が存在しないので, 証明自体は無理)
+### "For any ..."
 
-ことを目指すのが, Hypott の目的です.
+One of the difficulties in expressing "hypotheses" in older programming languages is to distinguish between "arbitrary something" (item (1) of a hypothesis) and "existing something" (item (2) of a hypothesis).
 
-### 「任意の ... に対して」
+This is because ordinary programming languages do not have a way to express "arbitrary something" as it is, so programmers are forced to write some concrete value, which is indistinguishable from the actually existing/specified value in the code.
 
-「仮説」を旧来のプログラミング言語で表現する場合に難しいことの一つは, 「任意の何々」(仮説の構成要素 (1)) と「存在する何々」(仮説の構成要素 (2)) を区別することです.
+In Hypott, such a precondition (1) is described by the function `forAny()`.
 
-なぜならば, 普通のプログラミング言語では「任意の何々」をそのまま表現する手段がないために, プログラマは何らかの具体的な値を記述せざるを得ず, そうするとコード上からは実際に存在/指定された値と区別ができなくなってしまうのです.
+Then, the arbitrary value specified in `forAny()` is replaced by a random value when the software test is executed, thereby "imitating a proof". There is no need for the programmer to come up with an "arbitrary value" and replace it with a suitable value.
 
-Hypott では, そのような前提条件 (1) を `forAny()` という関数で記述します (`forAny` は「任意の  に対して」という意味です).
-
-そして, `forAny()` で指定された任意の値をソフトウェア試験実行時にランダムな値に置き換えることによって「証明の真似事」をしています. 「任意の値」をプログラマがいちいち適当な値を考え出して置き換える必要はありません.
-
-もし, 「任意の値」の選択肢が (比較的少数の) 有限個しかなく, すべての選択肢の組み合わせを実行できたとしたら, それはある意味で「列挙による証明」ができたことになります. もちろん現実的なソフトウェア・コードでは, それは実現不可能ですが.
+If there are only a finite number of (relatively few) choices of "arbitrary values" and all combinations of choices can be executed, then in a sense, a "proof by enumeration" has been achieved. Of course, in a realistic software code, this is not feasible.
 
 ## Hypott.forAny()
 
-`forAny()` 関数 (任意の何々について) は, 以下の引数を取ります.
+The `forAny()` function (for any anything) takes the following arguments.
 
--   klass: KClass<T>
--   variant: Map<String, Map> = emptyMap()
--   where: Any? = null
+- klass: KClass<T>
+- variant: Map<String, Map> = emptyMap()
+- where: Any? = null
 
-必須なのは klass だけで, 普通はソフトウェア試験の対象となるクラスを渡します.
+Only klass is required, usually the class to be tested is passed.
 
 ```kotlin
 val foo = hypott.forAny(Foo::class)
 ```
 
-得られたインスタンスの各プロパティには, その方に適合した適当な値が疑似乱数を元に割り当てられています.
+Each property of the resulting instance is assigned a suitable value based on a pseudo-random number.
 
-あるプロパティの値に対して条件を付けることもできます (`variant`).
+It is also possible to set conditions on the value of a property (`variant`).
 
-また, ランダムではない, 特定の値を割り当てることもできます(`where`).
+You can also assign a non-random, specific value (`where`).
 
 ## Hypott()
 
-Hypott のインスタンスは次のようにして作成します.
+You can create a Hypott instance as follows.
 
 ```kotlin
 val hypott = Hypott()
-```
+````
 
-引数として, 疑似乱数の元となる `seed: Long` を渡すこともできます. `seed` が決まると一連の疑似乱数の値は決定的に決まるので, 同じ `seed` を使うことによって再現性があります. `seed` を渡さなければ, 適当な疑似乱数が用いられます.
+You can also pass `seed: Long` as an argument, which is the source of the pseudo-random numbers. The same `seed` can be used for reproducibility, since the value of the sequence of pseudo-random numbers is deterministic once the `seed` is determined. If you do not pass `seed`, then any suitable pseudo-random number is used.
 
-また, 疑似乱数を発生させる `kotlin.random.Random` を直接渡すこともできます. 複数の hypott インスタンスを同じ擬似乱数系列の中に置きたい場合に用います.
+You can also pass directly `kotlin.random.Random` to generate pseudo-random numbers. This is used when you want to put multiple instances of ## hypott in the same pseudo-random series.
 
-## Hypott に似たツール
+## Tools similar to Hypott
 
-Hypott に似たツールとして, `faker` と呼ばれるようなソフトウェア・ツールがたくさん提供されています. 特に JavaScript 系では, 郵便番号, 氏名のような人間にわかりやすい値を生成してくれるものがたくさんあります. ほとんどの `faker` は, それらしい値を生成することがおもな目的で, Hypott のように「仮説検証」というような考え方が背景にあるわけではありません.
+There are many software tools similar to Hypott, called `faker`. Especially in JavaScript, there are many tools that generate human-readable values such as zip code, name, etc. Most of the `faker` tools are similar to `Hypott`, but they are not. The main purpose of most of the `fakers` is to generate a plausible value, not to test a hypothesis as Hypott does.
 
-Property-based Testing は, `faker` などに較べて, よりテストを中心にした考え方です. 特に Kotlin については, [Kotest](https://kotest.io/) がProperty-basde Testing ツールを提供しており, 実績や完成度から言って利用を検討すべき対象の一つです. ただし, 例えばデフォルトではテスト時にテストごとに 1,000 回の試行を行います. これを良しとするかどうかは, 使う人の世界観に依るでしょう.
+Property-based Testing is more test-centric than `faker` and others. Especially for Kotlin, [Kotest](https://kotest.io/) provides a Property-basde Testing tool, and it is one of the tools that you should consider using, given its track record and completeness. However, by default, for example, the tool performs 1,000 trials for each test. Whether this is acceptable or not depends on the user's world view.
 
-テスト・データを生成する手法は, ソフトウェア工学の歴史の中でも, 1970 年代の IBM を初めとして今までも行われてきた手法です. 
+The method of generating test data is one that has been used throughout the history of software engineering, starting with IBM in the 1970s.
 
-Hypott は, `faker` や Property-base Testing に較べると, 「(テスト) 仕様を記述できること」がもっとも大きな目的です. テスト・データが生成されるのは, その結果に過ぎません. とは言うものの, 
+Hypott's main goal, compared to `faker` and Property-base Testing, is "to be able to write (test) specifications". The generation of test data is only the result. That being said
 
--   テストを簡潔に記述できること
--   テスト・データが容易に生成できること
+- The ability to describe tests in a concise manner
+- The ease with which test data can be generated
 
-は, Hypott の大きな特徴ではあります. テスト・コードと, テストの対象となるプロダクト・コードは互いをメタとする相補的な関係にあるのです.
+is a major feature of Hypott. The test code and the product code to be tested have a complementary relationship with each other as a meta.
+
