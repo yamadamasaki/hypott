@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "jp.co.metabolics"
-version = "1.0-SNAPSHOT"
+version = "1.0.0"
 
 val sonatypeUsername: String? by project
 val sonatypePassword: String? by project
