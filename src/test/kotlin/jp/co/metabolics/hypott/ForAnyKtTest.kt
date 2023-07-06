@@ -190,7 +190,7 @@ class ForAnyKtTest {
 
     val actual = hypott.forAny(SetFixture::class, mapOf("s" to variant))
 
-    assertTrue(actual.s.size <= variant.lengthRange.max()) // actual size of set may be reduced to make unique
+    assertTrue(actual.s.size <= variant.lengthRange.last) // actual size of set may be reduced to make unique
     assertTrue(actual.s.map { it.length in elementsVariant.lengthRange }.all { it })
     assertTrue(actual.s.map { it.matches(Regex("[${numericChars}].*")) }.all { it })
   }

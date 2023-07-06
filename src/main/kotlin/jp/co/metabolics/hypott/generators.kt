@@ -107,7 +107,7 @@ fun stringGenerator(random: Random, variant: Variant, nullable: Boolean): String
   val variant = variant as StringVariant // ToDo Exception
   if (nullable && random.nextFloat() < variant.nullRatio) return null
   val (lengthRange, chars) = variant
-  assert(0 < lengthRange.min())
+  assert(0 < lengthRange.first)
   assert(chars.isNotEmpty())
   val length = random.nextInt(lengthRange)
   return (1..length).map { chars.random(random) }.joinToString("")

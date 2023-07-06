@@ -1,12 +1,12 @@
 plugins {
-  kotlin("jvm") version "1.8.21"
+  kotlin("jvm") version "1.6.21"
   application
   signing
   `maven-publish`
 }
 
 group = "jp.co.metabolics"
-version = "1.0.0"
+version = "1.0.1"
 
 val sonatypeUsername: String? by project
 val sonatypePassword: String? by project
@@ -82,7 +82,7 @@ repositories {
 }
 
 dependencies {
-  implementation("org.jetbrains.kotlin:kotlin-reflect:1.8.21")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.21")
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.+")
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.0")
   testImplementation(kotlin("test"))
@@ -93,7 +93,9 @@ tasks.test {
 }
 
 kotlin {
-  jvmToolchain(11)
+  jvmToolchain {
+    (this as JavaToolchainSpec).languageVersion.set(JavaLanguageVersion.of(11))
+  }
 }
 
 application {
