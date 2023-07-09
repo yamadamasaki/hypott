@@ -11,7 +11,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.createType
 
-fun generateValue(type: KType, random: Random, variant: Variant?, where: Any? = null): Any? {
+fun generateValue(type: KType, random: Random, variant: Variant?, where: Any? = null, faker: HypottFaker): Any? {
   val nullable = type.isMarkedNullable
   return when (type.toString()) {
     "kotlin.Byte", "kotlin.Byte?" -> where ?: byteGenerator(random, variant ?: ByteVariant(), nullable)
@@ -28,7 +28,8 @@ fun generateValue(type: KType, random: Random, variant: Variant?, where: Any? = 
     "kotlin.Boolean", "kotlin.Boolean?" -> where ?: booleanGenerator(random, variant ?: BooleanVariant(), nullable)
     // this cause java.lang.IllegalArgumentException when a char is invalid as Character (文字)
     // "kotlin.Char" -> random.nextInt(Char.MIN_VALUE.digitToInt(), Char.MAX_VALUE.digitToInt())
-    "kotlin.String", "kotlin.String?" -> where ?: stringGenerator(random, variant ?: StringVariant(), nullable)
+    "kotlin.String", "kotlin.String?" -> where
+      ?: stringGenerator(random, variant ?: StringVariant(), nullable, faker)
     // "kotlin.Array" -> // ToDo
     // "kotlin.ByteArray" -> // ToDo
     // "kotlin.ShortArray" -> // ToDo
@@ -50,7 +51,7 @@ fun generateValue(type: KType, random: Random, variant: Variant?, where: Any? = 
     "java.math.BigDecimal", "java.math.BigDecimal?" ->
       where ?: bigDecimalGenerator(random, variant ?: BigDecimalVariant(), nullable)
 
-    else -> generateClassValue(type, random, variant, where, nullable)
+    else -> generateClassValue(type, random, variant, where, nullable, faker)
   }
 }
 
@@ -102,10 +103,11 @@ fun bigDecimalGenerator(random: Random, variant: Variant, nullable: Boolean): Bi
   else random.nextDouble().toBigDecimal()
 }
 
-fun stringGenerator(random: Random, variant: Variant, nullable: Boolean): String? {
+fun stringGenerator(random: Random, variant: Variant, nullable: Boolean, faker: HypottFaker): String? {
   assert(variant is StringVariant)
   val variant = variant as StringVariant // ToDo Exception
   if (nullable && random.nextFloat() < variant.nullRatio) return null
+  if (variant.faker != null) return faker.expression(variant.faker)
   val (lengthRange, chars) = variant
   assert(0 < lengthRange.first)
   assert(chars.isNotEmpty())
@@ -144,31 +146,32 @@ fun generateClassValue(
   random: Random,
   variant: Variant?,
   where: Any?,
-  nullable: Boolean
+  nullable: Boolean,
+  faker: HypottFaker
 ): Any? { // ToDo Null return
   val classifier = type.classifier ?: return null
   val klass = classifier as KClass<Any>
   return when {
     klass.java.isEnum -> where ?: generalEnumGenerator(klass, random, variant ?: EnumVariant(), nullable)
     klass.qualifiedName?.matches(Regex("""kotlin\.collections\.List.*""")) ?: false ->
-      where ?: generalListGenerator(klass, type.toString(), random, variant ?: ListVariant(), nullable)
+      where ?: generalListGenerator(klass, type.toString(), random, variant ?: ListVariant(), nullable, faker)
 
     klass.qualifiedName?.matches(Regex("""kotlin\.collections\.Set.*""")) ?: false ->
-      where ?: generalSetGenerator(klass, type.toString(), random, variant ?: SetVariant(), nullable)
+      where ?: generalSetGenerator(klass, type.toString(), random, variant ?: SetVariant(), nullable, faker)
 
     klass.qualifiedName?.matches(Regex("""kotlin\.collections\.Map.*""")) ?: false ->
-      where ?: generalMapGenerator(klass, type.toString(), random, variant ?: MapVariant(), nullable)
+      where ?: generalMapGenerator(klass, type.toString(), random, variant ?: MapVariant(), nullable, faker)
 
-    else -> generalClassGenerator(klass, random, variant ?: ClassVariant(), where, nullable)
+    else -> generalClassGenerator(klass, random, variant ?: ClassVariant(), where, nullable, faker)
   }
 }
 
 inline fun <reified T : Any> generalClassGenerator(
-  klass: KClass<T>, random: Random, variant: Variant, where: Any?, nullable: Boolean
+  klass: KClass<T>, random: Random, variant: Variant, where: Any?, nullable: Boolean, faker: HypottFaker
 ): T? {
   val variant = variant as ClassVariant // ToDo Exception
   if (nullable && random.nextFloat() < variant.nullRatio) return null
-  val hypott = Hypott(random = random)
+  val hypott = Hypott(random = random, faker = faker)
   return hypott.forAny(klass, variant.members, where)
 }
 
@@ -180,29 +183,29 @@ fun generalEnumGenerator(klass: KClass<*>, random: Random, variant: Variant, nul
 }
 
 fun <T : Any> generalListGenerator(
-  klass: KClass<T>, typeName: String, random: Random, variant: Variant, nullable: Boolean
+  klass: KClass<T>, typeName: String, random: Random, variant: Variant, nullable: Boolean, faker: HypottFaker
 ): T? {
   val variant = variant as ListVariant // ToDo Exception
   if (nullable && random.nextFloat() < variant.nullRatio) return null
   val typeParameterName = Regex(".*<(.*)>\\??").matchEntire(typeName)?.groupValues?.get(1) // ToDo Exception
   val type = Class.forName(kotlin2javaClassNameMap[typeParameterName]).kotlin.createType() // ToDo Exception
   val length = variant.lengthRange.random(random)
-  return (1..length).map { generateValue(type, random, variant.elementsVariant) } as T // ToDo Exception
+  return (1..length).map { generateValue(type, random, variant.elementsVariant, faker = faker) } as T // ToDo Exception
 }
 
 fun <T : Any> generalSetGenerator(
-  klass: KClass<T>, typeName: String, random: Random, variant: Variant, nullable: Boolean
+  klass: KClass<T>, typeName: String, random: Random, variant: Variant, nullable: Boolean, faker: HypottFaker
 ): T? {
   val variant = variant as SetVariant // ToDo Exception
   if (nullable && random.nextFloat() < variant.nullRatio) return null
   val typeParameterName = Regex(".*<(.*)>\\??").matchEntire(typeName)?.groupValues?.get(1) // ToDo Exception
   val type = Class.forName(kotlin2javaClassNameMap[typeParameterName]).kotlin.createType() // ToDo Exception
   val length = variant.lengthRange.random(random)
-  return (1..length).map { generateValue(type, random, variant.elementsVariant) }.toSet() as T // ToDo Exception
+  return (1..length).map { generateValue(type, random, variant.elementsVariant, faker = faker) }.toSet() as T // ToDo Exception
 }
 
 fun <T : Any> generalMapGenerator(
-  klass: KClass<T>, typeName: String, random: Random, variant: Variant, nullable: Boolean
+  klass: KClass<T>, typeName: String, random: Random, variant: Variant, nullable: Boolean, faker: HypottFaker
 ): T? {
   val variant = variant as MapVariant // ToDo Exception
   if (nullable && random.nextFloat() < variant.nullRatio) return null
@@ -214,8 +217,8 @@ fun <T : Any> generalMapGenerator(
   val length = variant.lengthRange.random(random)
   return (1..length).map {
     Pair(
-      generateValue(keyType, random, variant.keyVariant),
-      generateValue(valueType, random, variant.valueVariant),
+      generateValue(keyType, random, variant.keyVariant, faker = faker),
+      generateValue(valueType, random, variant.valueVariant, faker = faker),
     )
   }.associate { it } as T // ToDo Exception
 }

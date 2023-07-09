@@ -10,7 +10,8 @@ import kotlin.reflect.full.memberProperties
 
 class Hypott(
   val seed: Long = (Math.random() * 10E19).toLong(),
-  val random: Random = Random(seed)
+  val random: Random = Random(seed),
+  val faker: HypottFaker = HypottFaker(),
 ) {
   inline fun <reified T : Any> forAny(
     klass: KClass<T>,
@@ -24,7 +25,9 @@ class Hypott(
       Pair(
         typeName,
         generateValue(
-          it.returnType, random, variant[typeName], whereProperties?.find { prop -> prop.name == typeName }?.call(where)
+          it.returnType, random, variant[typeName],
+          whereProperties?.find { prop -> prop.name == typeName }?.call(where),
+          faker
         )
       )
     }.associate { it }
