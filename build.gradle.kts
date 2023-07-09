@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "jp.co.metabolics"
-version = "1.0.1"
+version = "1.0.2"
 
 val sonatypeUsername: String? by project
 val sonatypePassword: String? by project
@@ -85,6 +85,7 @@ dependencies {
   implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.21")
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.+")
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.0")
+  implementation("com.github.javafaker:javafaker:1.0.2")
   testImplementation(kotlin("test"))
 }
 

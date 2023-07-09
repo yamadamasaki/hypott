@@ -86,7 +86,8 @@ data class StringVariant(
   val lengthRange: IntRange = LengthRange.SS.range,
   val chars: String = alphaNumericChars,
   val regex: Regex? = null, // ToDo Feature
-  val nullRatio: Float = .5F
+  val nullRatio: Float = .5F,
+  val faker: String? = null,
 ) : Variant()
 
 enum class LengthRange(val range: IntRange) {
