@@ -12,11 +12,13 @@ class Hypott(
   val seed: Long = (Math.random() * 10E19).toLong(),
   val random: Random = Random(seed),
   val faker: HypottFaker = HypottFaker(),
+  val showValues: Boolean = true,
 ) {
   inline fun <reified T : Any> forAny(
     klass: KClass<T>,
     variant: Map<String, Variant> = emptyMap(),
     where: Any? = null,
+    showValues: Boolean = this.showValues,
   ): T {
     val memberProperties = klass.memberProperties
     val whereProperties = if (where == null) null else where::class.members
@@ -31,6 +33,7 @@ class Hypott(
         )
       )
     }.associate { it }
+    if (showValues) println("hypott: ${klass.simpleName} = $map")
     val mapper = jacksonObjectMapper()
     mapper.registerModule(JavaTimeModule())
     mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
