@@ -11,49 +11,49 @@ open class Variant
 
 enum class Distribution {
   UNIFORM,
-  NORMAL,
-  LOG_NORMAL,
+  // NORMAL,
+  // LOG_NORMAL,
 }
 
 data class ByteVariant(
   val min: Byte = Byte.MIN_VALUE,
   val max: Byte = Byte.MAX_VALUE,
-  // val distribution: Distribution = Distribution.Uniform, // ToDo Feature
+  val distribution: Distribution = Distribution.UNIFORM,
   val nullRatio: Float = .5F
 ) : Variant()
 
 data class ShortVariant(
   val min: Short = Short.MIN_VALUE,
   val max: Short = Short.MAX_VALUE,
-  // val distribution: Distribution = Distribution.Uniform, // ToDo Feature
+  val distribution: Distribution = Distribution.UNIFORM,
   val nullRatio: Float = .5F
 ) : Variant()
 
 data class IntVariant(
   val min: Int = Int.MIN_VALUE,
   val max: Int = Int.MAX_VALUE,
-  // val distribution: Distribution = Distribution.Uniform, // ToDo Feature
+  val distribution: Distribution = Distribution.UNIFORM,
   val nullRatio: Float = .5F
 ) : Variant()
 
 data class LongVariant(
   val min: Long = Long.MIN_VALUE,
   val max: Long = Long.MAX_VALUE,
-  // val distribution: Distribution = Distribution.Uniform, // ToDo Feature
+  val distribution: Distribution = Distribution.UNIFORM,
   val nullRatio: Float = .5F
 ) : Variant()
 
 data class FloatVariant(
   val min: Float = Float.MIN_VALUE,
   val max: Float = Float.MAX_VALUE,
-  // val distribution: Distribution = Distribution.Uniform, // ToDo Feature
+  val distribution: Distribution = Distribution.UNIFORM,
   val nullRatio: Float = .5F
 ) : Variant()
 
 data class DoubleVariant(
   val min: Double = Double.MIN_VALUE,
   val max: Double = Double.MAX_VALUE,
-  // val distribution: Distribution = Distribution.Uniform, // ToDo Feature
+  val distribution: Distribution = Distribution.UNIFORM,
   val nullRatio: Float = .5F
 ) : Variant()
 
@@ -65,7 +65,7 @@ data class DoubleVariant(
 data class BigDecimalVariant(
   val min: BigDecimal = BigDecimal(Double.MIN_VALUE),
   val max: BigDecimal = BigDecimal(Double.MAX_VALUE),
-  // val distribution: Distribution = Distribution.Uniform, // ToDo Feature
+  val distribution: Distribution = Distribution.UNIFORM,
   val nullRatio: Float = .5F
 ) : Variant()
 

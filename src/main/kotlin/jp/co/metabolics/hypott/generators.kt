@@ -58,37 +58,51 @@ fun generateValue(type: KType, random: Random, variant: Variant?, where: Any? = 
 fun byteGenerator(random: Random, variant: Variant, nullable: Boolean): Byte? {
   val variant = variant as ByteVariant // ToDo Exception
   return if (nullable && random.nextFloat() < variant.nullRatio) null
-  else generateSequence { random.nextBytes(1)[0] }.find { variant.min <= it && it < variant.max }
+  else when (variant.distribution) {
+    Distribution.UNIFORM ->
+      generateSequence { random.nextBytes(1)[0] }.find { variant.min <= it && it < variant.max }
+  }
+
 }
 
 fun shortGenerator(random: Random, variant: Variant, nullable: Boolean): Short? {
   val variant = variant as ShortVariant // ToDo Exception
   return if (nullable && random.nextFloat() < variant.nullRatio) null
-  else random.nextInt(variant.min.toInt(), variant.max.toInt()).toShort()
+  else when (variant.distribution) {
+    Distribution.UNIFORM -> random.nextInt(variant.min.toInt(), variant.max.toInt()).toShort()
+  }
 }
 
 fun intGenerator(random: Random, variant: Variant, nullable: Boolean): Int? {
   val variant = variant as IntVariant // ToDo Exception
   return if (nullable && random.nextFloat() < variant.nullRatio) null
-  else random.nextInt(variant.min, variant.max)
+  else when (variant.distribution) {
+    Distribution.UNIFORM -> random.nextInt(variant.min, variant.max)
+  }
 }
 
 fun longGenerator(random: Random, variant: Variant, nullable: Boolean): Long? {
   val variant = variant as LongVariant // ToDo Exception
   return if (nullable && random.nextFloat() < variant.nullRatio) null
-  else random.nextLong(variant.min, variant.max)
+  else when (variant.distribution) {
+    Distribution.UNIFORM -> random.nextLong(variant.min, variant.max)
+  }
 }
 
 fun floatGenerator(random: Random, variant: Variant, nullable: Boolean): Float? {
   val variant = variant as FloatVariant // ToDo Exception
   return if (nullable && random.nextFloat() < variant.nullRatio) null
-  else random.nextDouble(variant.min.toDouble(), variant.max.toDouble()).toFloat()
+  else when (variant.distribution) {
+    Distribution.UNIFORM -> random.nextDouble(variant.min.toDouble(), variant.max.toDouble()).toFloat()
+  }
 }
 
 fun doubleGenerator(random: Random, variant: Variant, nullable: Boolean): Double? {
   val variant = variant as DoubleVariant // ToDo Exception
   return if (nullable && random.nextFloat() < variant.nullRatio) null
-  else random.nextDouble(variant.min, variant.max)
+  else when (variant.distribution) {
+    Distribution.UNIFORM -> random.nextDouble(variant.min, variant.max)
+  }
 }
 
 fun booleanGenerator(random: Random, variant: Variant, nullable: Boolean): Boolean? {
@@ -100,7 +114,9 @@ fun booleanGenerator(random: Random, variant: Variant, nullable: Boolean): Boole
 fun bigDecimalGenerator(random: Random, variant: Variant, nullable: Boolean): BigDecimal? {
   val variant = variant as BigDecimalVariant // ToDo Exception
   return if (nullable && random.nextFloat() < variant.nullRatio) null
-  else random.nextDouble(variant.min.toDouble(), variant.max.toDouble()).toBigDecimal()
+  else when (variant.distribution) {
+    Distribution.UNIFORM -> random.nextDouble(variant.min.toDouble(), variant.max.toDouble()).toBigDecimal()
+  }
 }
 
 fun stringGenerator(random: Random, variant: Variant, nullable: Boolean, faker: HypottFaker): String? {
