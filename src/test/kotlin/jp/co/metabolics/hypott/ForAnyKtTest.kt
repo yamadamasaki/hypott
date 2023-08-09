@@ -31,15 +31,15 @@ class ForAnyKtTest {
       val bg: BigDecimal,
     )
 
-    // Note: the order of evaluation (alphabetically sorted) is crucial
+    // Note: the order of evaluation (to be alphabetically sorted) is crucial
     val expectation = PrimitivesFixture(
       b = random.nextBytes(1)[0],
-      bg = random.nextDouble().toBigDecimal(),
+      bg = random.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE).toBigDecimal(),
       boolean = random.nextBoolean(),
-      d = random.nextDouble(),
-      f = random.nextFloat(),
-      i = random.nextInt(),
-      l = random.nextLong(),
+      d = random.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE),
+      f = random.nextDouble(Float.MIN_VALUE.toDouble(), Float.MAX_VALUE.toDouble()).toFloat(),
+      i = random.nextInt(Int.MIN_VALUE, Int.MAX_VALUE),
+      l = random.nextLong(Long.MIN_VALUE, Long.MAX_VALUE),
       s = random.nextInt(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt()).toShort(),
       /*
       ub = random.nextUBytes(1)[0],
