@@ -1,5 +1,6 @@
 package jp.co.metabolics.hypott
 
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
@@ -9,72 +10,62 @@ import java.time.ZoneOffset
 open class Variant
 
 enum class Distribution {
-  Uniform,
+  UNIFORM,
+  NORMAL,
+  LOG_NORMAL,
 }
-
-enum class NegPos {
-  Negative,
-  Positive,
-  NotNegative,
-  NotPositive,
-  Zero,
-  All,
-}
-
-data class ByteRange(val min: Byte, val max: Byte)
 
 data class ByteVariant(
-  // val range: ByteRange = ByteRange(Byte.MIN_VALUE, Byte.MAX_VALUE), // ToDo Feature
+  val min: Byte = Byte.MIN_VALUE,
+  val max: Byte = Byte.MAX_VALUE,
   // val distribution: Distribution = Distribution.Uniform, // ToDo Feature
-  // val negpos: NegPos = NegPos.All, // ToDo Feature
   val nullRatio: Float = .5F
 ) : Variant()
 
-data class ShortRange(val min: Short, val max: Short)
-
 data class ShortVariant(
-  // val range: ShortRange = ShortRange(Short.MIN_VALUE, Short.MAX_VALUE), // ToDo Feature
+  val min: Short = Short.MIN_VALUE,
+  val max: Short = Short.MAX_VALUE,
   // val distribution: Distribution = Distribution.Uniform, // ToDo Feature
-  // val negpos: NegPos = NegPos.All, // ToDo Feature
   val nullRatio: Float = .5F
 ) : Variant()
 
 data class IntVariant(
-  // val range: IntRange = IntRange(Int.MIN_VALUE, Int.MAX_VALUE), // ToDo Feature
+  val min: Int = Int.MIN_VALUE,
+  val max: Int = Int.MAX_VALUE,
   // val distribution: Distribution = Distribution.Uniform, // ToDo Feature
-  // val negpos: NegPos = NegPos.All, // ToDo Feature
   val nullRatio: Float = .5F
 ) : Variant()
 
 data class LongVariant(
-  // val range: LongRange = LongRange(Long.MIN_VALUE, Long.MAX_VALUE), // ToDo Feature
+  val min: Long = Long.MIN_VALUE,
+  val max: Long = Long.MAX_VALUE,
   // val distribution: Distribution = Distribution.Uniform, // ToDo Feature
-  // val negpos: NegPos = NegPos.All, // ToDo Feature
   val nullRatio: Float = .5F
 ) : Variant()
-
-data class FloatRange(val min: Float, val max: Float)
 
 data class FloatVariant(
-  // val range: FloatRange = FloatRange(Float.MIN_VALUE, Float.MAX_VALUE), // ToDo Feature
+  val min: Float = Float.MIN_VALUE,
+  val max: Float = Float.MAX_VALUE,
   // val distribution: Distribution = Distribution.Uniform, // ToDo Feature
-  // val negpos: NegPos = NegPos.All, // ToDo Feature
   val nullRatio: Float = .5F
 ) : Variant()
-
-data class DoubleRange(val min: Double, val max: Double)
 
 data class DoubleVariant(
-  val range: DoubleRange = DoubleRange(Double.MIN_VALUE, Double.MAX_VALUE), // ToDo Feature
+  val min: Double = Double.MIN_VALUE,
+  val max: Double = Double.MAX_VALUE,
   // val distribution: Distribution = Distribution.Uniform, // ToDo Feature
-  // val negpos: NegPos = NegPos.All, // ToDo Feature
   val nullRatio: Float = .5F
 ) : Variant()
 
+// this is the correct max BitInteger value, but it takes too much time to compute it
+//private val maxBigInteger: BigInteger = BigInteger("2").pow(Int.MAX_VALUE-1) - BigInteger.ONE + BigInteger("2").pow(Int.MAX_VALUE-1)
+//private val maxBigDecimal: BigDecimal = BigDecimal(maxBigInteger)
+// so i use BigDecimal(Double.MAX_VALUE)
+
 data class BigDecimalVariant(
-  // val range: LongRange = LongRange(Long.MIN_VALUE, Long.MAX_VALUE), // ToDo Feature
+  val min: BigDecimal = BigDecimal(Double.MIN_VALUE),
+  val max: BigDecimal = BigDecimal(Double.MAX_VALUE),
   // val distribution: Distribution = Distribution.Uniform, // ToDo Feature
-  // val negpos: NegPos = NegPos.All, // ToDo Feature
   val nullRatio: Float = .5F
 ) : Variant()
 
