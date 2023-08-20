@@ -87,6 +87,10 @@ dependencies {
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.0")
   implementation("com.github.javafaker:javafaker:1.0.2")
   implementation("org.apache.commons:commons-math3:3.2")
+  implementation("org.apache.commons:commons-statistics-distribution:1.0")
+  implementation("org.apache.commons:commons-rng-parent:1.5")
+  implementation("org.apache.commons:commons-rng-simple:1.5")
+
   testImplementation(kotlin("test"))
 }
 

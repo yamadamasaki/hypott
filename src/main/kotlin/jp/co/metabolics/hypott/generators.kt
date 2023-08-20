@@ -1,17 +1,24 @@
 package jp.co.metabolics.hypott
 
+import org.apache.commons.math3.distribution.NormalDistribution
+import org.apache.commons.math3.random.JDKRandomGenerator
+import org.apache.commons.rng.UniformRandomProvider
 import java.math.BigDecimal
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
-import kotlin.random.Random
-import kotlin.random.nextInt
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.createType
 
-fun generateValue(type: KType, random: Random, variant: Variant?, where: Any? = null, faker: HypottFaker): Any? {
+fun generateValue(
+  type: KType,
+  random: UniformRandomProvider,
+  variant: Variant?,
+  where: Any? = null,
+  faker: HypottFaker
+): Any? {
   val nullable = type.isMarkedNullable
   return when (type.toString()) {
     "kotlin.Byte", "kotlin.Byte?" -> where ?: byteGenerator(random, variant ?: ByteVariant(), nullable)
@@ -55,71 +62,74 @@ fun generateValue(type: KType, random: Random, variant: Variant?, where: Any? = 
   }
 }
 
-fun byteGenerator(random: Random, variant: Variant, nullable: Boolean): Byte? {
+fun byteGenerator(random: UniformRandomProvider, variant: Variant, nullable: Boolean): Byte? {
   val variant = variant as ByteVariant // ToDo Exception
   return if (nullable && random.nextFloat() < variant.nullRatio) null
   else when (variant.distribution) {
-    Distribution.UNIFORM ->
-      generateSequence { random.nextBytes(1)[0] }.find { variant.min <= it && it < variant.max }
+    Distribution.UNIFORM, Distribution.NORMAL -> random.nextInt(variant.min.toInt(), variant.max.toInt()).toByte()
   }
-
 }
 
-fun shortGenerator(random: Random, variant: Variant, nullable: Boolean): Short? {
+fun shortGenerator(random: UniformRandomProvider, variant: Variant, nullable: Boolean): Short? {
   val variant = variant as ShortVariant // ToDo Exception
   return if (nullable && random.nextFloat() < variant.nullRatio) null
   else when (variant.distribution) {
-    Distribution.UNIFORM -> random.nextInt(variant.min.toInt(), variant.max.toInt()).toShort()
+    Distribution.UNIFORM, Distribution.NORMAL -> random.nextInt(variant.min.toInt(), variant.max.toInt()).toShort()
   }
 }
 
-fun intGenerator(random: Random, variant: Variant, nullable: Boolean): Int? {
+fun intGenerator(random: UniformRandomProvider, variant: Variant, nullable: Boolean): Int? {
   val variant = variant as IntVariant // ToDo Exception
   return if (nullable && random.nextFloat() < variant.nullRatio) null
   else when (variant.distribution) {
-    Distribution.UNIFORM -> random.nextInt(variant.min, variant.max)
+    Distribution.UNIFORM, Distribution.NORMAL -> random.nextInt(variant.min, variant.max)
   }
 }
 
-fun longGenerator(random: Random, variant: Variant, nullable: Boolean): Long? {
+fun longGenerator(random: UniformRandomProvider, variant: Variant, nullable: Boolean): Long? {
   val variant = variant as LongVariant // ToDo Exception
   return if (nullable && random.nextFloat() < variant.nullRatio) null
   else when (variant.distribution) {
-    Distribution.UNIFORM -> random.nextLong(variant.min, variant.max)
+    Distribution.UNIFORM, Distribution.NORMAL -> random.nextLong(variant.min, variant.max)
   }
 }
 
-fun floatGenerator(random: Random, variant: Variant, nullable: Boolean): Float? {
+fun floatGenerator(random: UniformRandomProvider, variant: Variant, nullable: Boolean): Float? {
   val variant = variant as FloatVariant // ToDo Exception
   return if (nullable && random.nextFloat() < variant.nullRatio) null
   else when (variant.distribution) {
     Distribution.UNIFORM -> random.nextDouble(variant.min.toDouble(), variant.max.toDouble()).toFloat()
+    Distribution.NORMAL -> {
+      val distribution = NormalDistribution(JDKRandomGenerator(), 0.0, 1.0, 0.0)
+      distribution.sample().toFloat()
+    }
   }
 }
 
-fun doubleGenerator(random: Random, variant: Variant, nullable: Boolean): Double? {
+fun doubleGenerator(random: UniformRandomProvider, variant: Variant, nullable: Boolean): Double? {
   val variant = variant as DoubleVariant // ToDo Exception
   return if (nullable && random.nextFloat() < variant.nullRatio) null
   else when (variant.distribution) {
-    Distribution.UNIFORM -> random.nextDouble(variant.min, variant.max)
+    Distribution.UNIFORM, Distribution.NORMAL -> random.nextDouble(variant.min, variant.max)
   }
 }
 
-fun booleanGenerator(random: Random, variant: Variant, nullable: Boolean): Boolean? {
+fun booleanGenerator(random: UniformRandomProvider, variant: Variant, nullable: Boolean): Boolean? {
   val variant = variant as BooleanVariant // ToDo Exception
   return if (nullable && random.nextFloat() < variant.nullRatio) null
   else random.nextBoolean()
 }
 
-fun bigDecimalGenerator(random: Random, variant: Variant, nullable: Boolean): BigDecimal? {
+fun bigDecimalGenerator(random: UniformRandomProvider, variant: Variant, nullable: Boolean): BigDecimal? {
   val variant = variant as BigDecimalVariant // ToDo Exception
   return if (nullable && random.nextFloat() < variant.nullRatio) null
   else when (variant.distribution) {
-    Distribution.UNIFORM -> random.nextDouble(variant.min.toDouble(), variant.max.toDouble()).toBigDecimal()
+    Distribution.UNIFORM, Distribution.NORMAL -> random.nextDouble(variant.min.toDouble(), variant.max.toDouble())
+      .toBigDecimal()
   }
 }
 
-fun stringGenerator(random: Random, variant: Variant, nullable: Boolean, faker: HypottFaker): String? {
+fun stringGenerator(random: UniformRandomProvider, variant: Variant, nullable: Boolean, faker: HypottFaker): String? {
   assert(variant is StringVariant)
   val variant = variant as StringVariant // ToDo Exception
   if (nullable && random.nextFloat() < variant.nullRatio) return null
@@ -127,11 +137,11 @@ fun stringGenerator(random: Random, variant: Variant, nullable: Boolean, faker: 
   val (lengthRange, chars) = variant
   assert(0 < lengthRange.first)
   assert(chars.isNotEmpty())
-  val length = random.nextInt(lengthRange)
-  return (1..length).map { chars.random(random) }.joinToString("")
+  val length = random.nextInt(lengthRange.first, lengthRange.last - 1)
+  return (1..length).joinToString("") { chars.random(random) }
 }
 
-fun offsetDateTimeGenerator(random: Random, variant: Variant, nullable: Boolean): OffsetDateTime? {
+fun offsetDateTimeGenerator(random: UniformRandomProvider, variant: Variant, nullable: Boolean): OffsetDateTime? {
   val variant = variant as OffsetDateTimeVariant // ToDo Exception
   if (nullable && random.nextFloat() < variant.nullRatio) return null
   val (from, until, zoneId) = variant
@@ -141,7 +151,7 @@ fun offsetDateTimeGenerator(random: Random, variant: Variant, nullable: Boolean)
   )
 }
 
-fun localDateTimeGenerator(random: Random, variant: Variant, nullable: Boolean): LocalDateTime? {
+fun localDateTimeGenerator(random: UniformRandomProvider, variant: Variant, nullable: Boolean): LocalDateTime? {
   val variant = variant as LocalDateTimeVariant // ToDo Exception
   if (nullable && random.nextFloat() < variant.nullRatio) return null
   val (from, until, offset) = variant
@@ -150,7 +160,7 @@ fun localDateTimeGenerator(random: Random, variant: Variant, nullable: Boolean):
   )
 }
 
-fun localDateGenerator(random: Random, variant: Variant, nullable: Boolean): LocalDate? {
+fun localDateGenerator(random: UniformRandomProvider, variant: Variant, nullable: Boolean): LocalDate? {
   val variant = variant as LocalDateVariant // ToDo Exception
   if (nullable && random.nextFloat() < variant.nullRatio) return null
   val (from, until) = variant
@@ -159,7 +169,7 @@ fun localDateGenerator(random: Random, variant: Variant, nullable: Boolean): Loc
 
 fun generateClassValue(
   type: KType,
-  random: Random,
+  random: UniformRandomProvider,
   variant: Variant?,
   where: Any?,
   nullable: Boolean,
@@ -183,7 +193,7 @@ fun generateClassValue(
 }
 
 inline fun <reified T : Any> generalClassGenerator(
-  klass: KClass<T>, random: Random, variant: Variant, where: Any?, nullable: Boolean, faker: HypottFaker
+  klass: KClass<T>, random: UniformRandomProvider, variant: Variant, where: Any?, nullable: Boolean, faker: HypottFaker
 ): T? {
   val variant = variant as ClassVariant // ToDo Exception
   if (nullable && random.nextFloat() < variant.nullRatio) return null
@@ -191,7 +201,12 @@ inline fun <reified T : Any> generalClassGenerator(
   return hypott.forAny(klass, variant.members, where)
 }
 
-fun generalEnumGenerator(klass: KClass<*>, random: Random, variant: Variant, nullable: Boolean): Enum<*>? {
+fun generalEnumGenerator(
+  klass: KClass<*>,
+  random: UniformRandomProvider,
+  variant: Variant,
+  nullable: Boolean
+): Enum<*>? {
   val variant = variant as EnumVariant // ToDo Exception
   if (nullable && random.nextFloat() < variant.nullRatio) return null
   val constants = klass.java.enumConstants
@@ -199,7 +214,12 @@ fun generalEnumGenerator(klass: KClass<*>, random: Random, variant: Variant, nul
 }
 
 fun <T : Any> generalListGenerator(
-  klass: KClass<T>, typeName: String, random: Random, variant: Variant, nullable: Boolean, faker: HypottFaker
+  klass: KClass<T>,
+  typeName: String,
+  random: UniformRandomProvider,
+  variant: Variant,
+  nullable: Boolean,
+  faker: HypottFaker
 ): T? {
   val variant = variant as ListVariant // ToDo Exception
   if (nullable && random.nextFloat() < variant.nullRatio) return null
@@ -210,7 +230,12 @@ fun <T : Any> generalListGenerator(
 }
 
 fun <T : Any> generalSetGenerator(
-  klass: KClass<T>, typeName: String, random: Random, variant: Variant, nullable: Boolean, faker: HypottFaker
+  klass: KClass<T>,
+  typeName: String,
+  random: UniformRandomProvider,
+  variant: Variant,
+  nullable: Boolean,
+  faker: HypottFaker
 ): T? {
   val variant = variant as SetVariant // ToDo Exception
   if (nullable && random.nextFloat() < variant.nullRatio) return null
@@ -222,7 +247,12 @@ fun <T : Any> generalSetGenerator(
 }
 
 fun <T : Any> generalMapGenerator(
-  klass: KClass<T>, typeName: String, random: Random, variant: Variant, nullable: Boolean, faker: HypottFaker
+  klass: KClass<T>,
+  typeName: String,
+  random: UniformRandomProvider,
+  variant: Variant,
+  nullable: Boolean,
+  faker: HypottFaker
 ): T? {
   val variant = variant as MapVariant // ToDo Exception
   if (nullable && random.nextFloat() < variant.nullRatio) return null
@@ -239,3 +269,9 @@ fun <T : Any> generalMapGenerator(
     )
   }.associate { it } as T // ToDo Exception
 }
+
+fun IntRange.random(random: UniformRandomProvider): Int = random.nextInt(count()) + first
+
+fun String.random(random: UniformRandomProvider): String = get(random.nextInt(length)).toString()
+
+fun <T> Array<T>.random(random: UniformRandomProvider): T = get(random.nextInt(size))

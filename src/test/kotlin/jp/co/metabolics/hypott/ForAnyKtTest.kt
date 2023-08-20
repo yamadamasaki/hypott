@@ -1,5 +1,7 @@
 package jp.co.metabolics.hypott
 
+import org.apache.commons.rng.UniformRandomProvider
+import org.apache.commons.rng.simple.RandomSource
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -8,17 +10,16 @@ import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
-import kotlin.random.Random
 
 class ForAnyKtTest {
   private val seed = (Math.random() * Long.MAX_VALUE).toLong()
   private lateinit var hypott: Hypott
-  private lateinit var random: Random
+  private lateinit var random: UniformRandomProvider
 
   @BeforeEach
   fun beforeEach() {
     hypott = Hypott(seed = seed)
-    random = Random(seed)
+    random = RandomSource.JDK.create(seed)
   }
 
   @Test
@@ -33,7 +34,7 @@ class ForAnyKtTest {
 
     // Note: the order of evaluation (to be alphabetically sorted) is crucial
     val expectation = PrimitivesFixture(
-      b = random.nextBytes(1)[0],
+      b = random.nextInt(Byte.MIN_VALUE.toInt(), Byte.MAX_VALUE.toInt()).toByte(),
       bg = random.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE).toBigDecimal(),
       boolean = random.nextBoolean(),
       d = random.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE),

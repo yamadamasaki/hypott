@@ -11,7 +11,7 @@ open class Variant
 
 enum class Distribution {
   UNIFORM,
-  // NORMAL,
+  NORMAL,
   // LOG_NORMAL,
 }
 

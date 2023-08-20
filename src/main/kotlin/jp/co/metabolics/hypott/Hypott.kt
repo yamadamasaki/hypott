@@ -4,13 +4,14 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import kotlin.random.Random
+import org.apache.commons.rng.UniformRandomProvider
+import org.apache.commons.rng.simple.RandomSource
 import kotlin.reflect.KClass
 import kotlin.reflect.full.memberProperties
 
 class Hypott(
   val seed: Long = (Math.random() * 10E19).toLong(),
-  val random: Random = Random(seed),
+  val random: UniformRandomProvider = RandomSource.JDK.create(seed),
   val faker: HypottFaker = HypottFaker(),
   val showValues: Boolean = true,
 ) {
